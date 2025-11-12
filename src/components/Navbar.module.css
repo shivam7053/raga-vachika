@@ -1,0 +1,191 @@
+/* ---------- Sidebar Container ---------- */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 280px;
+  padding: var(--mantine-spacing-md);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(
+    180deg,
+    var(--mantine-color-blue-6),
+    var(--mantine-color-blue-8)
+  );
+  transition: all 0.3s ease;
+  z-index: 4000; /* lower than Mantine portals, higher than layout content */
+  overflow-y: auto;
+  overflow-x: visible; /* allow dropdowns to escape horizontally */
+  contain: layout; /* isolate stacking context safely */
+}
+
+/* ---------- Main Section ---------- */
+.navbarMain {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  overflow: visible;
+}
+
+/* ---------- Header ---------- */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--mantine-spacing-md);
+  margin-bottom: calc(var(--mantine-spacing-md) * 1.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  z-index: 4100;
+  position: relative;
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  padding-top: var(--mantine-spacing-md);
+  margin-top: var(--mantine-spacing-md);
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  pointer-events: auto;
+  z-index: 4100;
+  position: relative;
+}
+
+/* ---------- Version Tag ---------- */
+.version {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+}
+
+/* ---------- Links Container ---------- */
+.linksContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  position: relative;
+  z-index: 4200;
+}
+
+/* ---------- Links ---------- */
+.link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-decoration: none;
+  font-size: var(--mantine-font-size-sm);
+  color: #e9f0ff;
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
+  border-radius: var(--mantine-radius-sm);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.link:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+/* ---------- Dropdown Menu ---------- */
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 220px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  margin-top: 4px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  z-index: 9500; /* High enough to appear above everything */
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  animation: dropdownFade 0.25s ease-in-out;
+}
+
+.dropdownMenu a {
+  color: #fff;
+  text-decoration: none;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.dropdownMenu a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ---------- Dropdown Animation ---------- */
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Active Link ---------- */
+.active {
+  background-color: var(--mantine-color-white);
+  color: var(--mantine-color-blue-8);
+  box-shadow: var(--mantine-shadow-sm);
+}
+
+.active .linkIcon {
+  color: var(--mantine-color-blue-8);
+}
+
+/* ---------- Dark Mode Adjustments ---------- */
+:global(.mantine-dark) .navbar {
+  background: linear-gradient(
+    180deg,
+    var(--mantine-color-dark-6),
+    var(--mantine-color-dark-8)
+  );
+}
+
+:global(.mantine-dark) .link {
+  color: var(--mantine-color-gray-1);
+}
+
+:global(.mantine-dark) .link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+:global(.mantine-dark) .active {
+  background-color: var(--mantine-color-blue-6);
+  color: #fff;
+}
+
+:global(.mantine-dark) .active .linkIcon {
+  color: #fff;
+}
+
+/* ---------- Mantine Portal Layer Fix ---------- */
+:global(.mantine-Portal) {
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+
+:global(.mantine-Menu-dropdown) {
+  z-index: 99999 !important;
+  position: absolute !important;
+  overflow: visible !important;
+  transform: translateY(-5px);
+  animation: dropdownFade 0.25s ease-in-out;
+  background-color: var(--mantine-color-dark-7);
+  border-radius: 8px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
