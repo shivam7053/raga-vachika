@@ -22,6 +22,7 @@ import {
   IconMoon,
   IconLogout,
   IconUser,
+  IconReceipt,
 } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import { useAuth } from "@/context/AuthContext";
@@ -219,6 +220,15 @@ export default function Navbar() {
                 onClick={() => console.log("📘 My Courses clicked")}
               >
                 My Courses
+              </Menu.Item>
+
+              <Menu.Item
+                component={Link}
+                href="/transactions"
+                leftSection={<IconReceipt size={16} />}
+                onClick={() => console.log("💳 Transactions clicked")}
+              >
+                Transactions
               </Menu.Item>
 
               <Menu.Divider />
