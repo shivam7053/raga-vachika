@@ -5,7 +5,7 @@ const CLIENT_ID = process.env.GMAIL_CLIENT_ID!;
 const CLIENT_SECRET = process.env.GMAIL_CLIENT_SECRET!;
 const REDIRECT_URI = process.env.GMAIL_REDIRECT_URI!;
 const REFRESH_TOKEN = process.env.GMAIL_REFRESH_TOKEN!;
-const FROM_EMAIL = process.env.GMAIL_FROM_EMAIL || "your-email@gmail.com";
+const FROM_EMAIL = process.env.SENDER_EMAIL || "your-email@gmail.com";
 
 // OAuth client
 const oauth2Client = new google.auth.OAuth2(
@@ -117,7 +117,7 @@ export async function sendEmail(
     CLIENT_ID: !!CLIENT_ID,
     CLIENT_SECRET: !!CLIENT_SECRET,
     REDIRECT_URI: !!REDIRECT_URI,
-    REFRESH_TOKEN: REFRESH_TOKEN.substring(0, 10) + "...",
+    REFRESH_TOKEN: REFRESH_TOKEN ? REFRESH_TOKEN.substring(0, 10) + "..." : "MISSING",
     FROM_EMAIL,
   });
 
