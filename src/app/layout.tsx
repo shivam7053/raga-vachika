@@ -9,8 +9,8 @@ import { CelebrationProvider } from "@/context/CelebrationContext";
 import CelebrationClient from "@/components/CelebrationClient";
 
 export const metadata: Metadata = {
-  title: "GrowPro",
-  description: "Next.js based education growth platform",
+  title: "RagaVachika",
+  description: "Next.js based edutech website for ensure the best education",
 };
 
 export default function RootLayout({

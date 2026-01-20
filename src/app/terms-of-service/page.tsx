@@ -93,8 +93,8 @@ export default function TermsOfServicePage() {
               </h2>
               <p>
                 For any questions about these Terms, please contact us at{" "}
-                <strong>india.growpro@gmail.com</strong> or call{" "}
-                <strong>+91 9625003045</strong>.
+                <strong>ragavachika@gmail.com</strong> or call{" "}
+                <strong>+91 0010010010</strong>.
               </p>
             </section>
 

@@ -192,7 +192,7 @@ export default function ContactUsPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900 dark:text-gray-100">Email</p>
-                      <a href="mailto:India.growpro@gmail.com" className="text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">India.growpro@gmail.com</a>
+                      <a href="mailto:India.growpro@gmail.com" className="text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">ragavachika@gmail.com</a>
                     </div>
                   </div>
 
@@ -202,7 +202,7 @@ export default function ContactUsPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900 dark:text-gray-100">Phone</p>
-                      <a href="tel:+919625003045" className="text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">+91 9625003045</a>
+                      <a href="tel:+919625003045" className="text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">+91 0010010010</a>
                     </div>
                   </div>
 

@@ -90,7 +90,7 @@ export default function CookiePolicyPage() {
               </h2>
               <p>
                 If you have any questions about this policy, contact us at{" "}
-                <strong>india.growpro@gmail.com</strong>.
+                <strong>ragavachika@gmail.com</strong>.
               </p>
             </section>
 

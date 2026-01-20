@@ -85,7 +85,7 @@ export default function PrivacyPolicyPage() {
               </h2>
               <p>
                 You can request access, correction, or deletion of your data by
-                emailing us at <strong>india.growpro@gmail.com</strong>.
+                emailing us at <strong>ragavachika@gmail.com</strong>.
               </p>
             </section>
 
