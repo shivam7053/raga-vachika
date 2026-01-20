@@ -35,13 +35,13 @@ async function generatePdfReceiptBase64(
   const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
   const fontSize = 12;
-  const brandColor = rgb(79 / 255, 70 / 255, 229 / 255); // #4f46e5
+  const brandColor = rgb(14 / 255, 165 / 255, 233 / 255); // sky-500
 
-  page.drawText("Payment Receipt", {
+  page.drawText("Ragavachika - Payment Receipt", {
     x: 50,
     y: height - 50,
     font: boldFont,
-    size: 24,
+    size: 22,
     color: brandColor,
   });
 
@@ -61,7 +61,7 @@ async function generatePdfReceiptBase64(
     yPosition -= 20;
   }
 
-  page.drawText("Thank you for your purchase!", {
+  page.drawText("Thank you for your purchase with Ragavachika!", {
     x: 50,
     y: yPosition - 30,
     font,
@@ -86,13 +86,30 @@ async function emailPdfReceipt(
 ) {
   try {
     console.log(`[EMAIL-PDF] Sending receipt for order ${orderId} to ${email}`);
-    const subject = `Your Receipt for ${masterclassTitle}`;
+    const subject = `Your Ragavachika Receipt for ${masterclassTitle}`;
     const html = `
-      <p>Hi ${userName},</p>
-      <p>Thank you for your purchase! Your payment receipt is attached to this email.</p>
-      <p><b>Order ID:</b> ${orderId}<br/>
-      <b>Amount Paid:</b> INR ${amount.toFixed(2)}</p>
-      <p>You can also access your masterclass content at any time by logging into your account.</p>
+      <!DOCTYPE html>
+      <html>
+      <body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f7fafc;">
+        <div style="max-width: 600px; margin: auto; background-color: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          <div style="background: linear-gradient(to right, #0ea5e9, #f97316); color: #fff; padding: 30px; text-align: center;">
+            <h1 style="margin: 0; font-size: 28px;">Thank You for Your Purchase!</h1>
+          </div>
+          <div style="padding: 30px;">
+            <p style="font-size: 16px; color: #374151; margin-top: 0;">Hi ${userName},</p>
+            <p style="font-size: 16px; color: #374151; line-height: 1.5;">
+              Your payment was successful. Your receipt is attached to this email.
+            </p>
+            <div style="margin: 20px 0; padding: 20px; background-color: #f3f4f6; border-radius: 8px;">
+              <p style="margin: 0;"><strong>Order ID:</strong> ${orderId}</p>
+              <p style="margin: 5px 0 0;"><strong>Amount Paid:</strong> INR ${amount.toFixed(2)}</p>
+            </div>
+            <p style="font-size: 16px; color: #374151; line-height: 1.5;">You can access your masterclass content at any time by logging into your Ragavachika account.</p>
+          </div>
+          <div style="padding: 20px; text-align: center; font-size: 12px; color: #9ca3af; background-color: #f9fafb;"><p>&copy; ${new Date().getFullYear()} Ragavachika. All rights reserved.</p></div>
+        </div>
+      </body>
+      </html>
     `;
     const attachments = [{
       filename: `receipt-${orderId}.pdf`,
@@ -156,17 +173,24 @@ async function sendImmediateReminder(
     const html = `
       <!DOCTYPE html>
       <html>
-      <body>
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-          <h2 style="color: #333;">🚨 Reminder: Your Live Session is Starting Soon!</h2>
-          <p>Hi ${userName},</p>
-          <p>Thank you for your purchase! This is an immediate reminder that your live session, "<b>${contentItem.title}</b>", is scheduled to begin soon.</p>
-          <p><b>Scheduled Time:</b> ${scheduledDate.toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}</p>
-          <p>You can access the session details and join link directly from the masterclass page:</p>
-          <a href="${siteUrl}/masterclasses/${masterclass.id}" style="display: inline-block; padding: 10px 20px; background-color: #4f46e5; color: #fff; text-decoration: none; border-radius: 5px;">
-            Go to Masterclass
-          </a>
-          <p style="margin-top: 20px; font-size: 0.9em; color: #777;">We're excited to see you there!</p>
+      <body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f7fafc;">
+        <div style="max-width: 600px; margin: auto; background-color: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          <div style="background: linear-gradient(to right, #0ea5e9, #f97316); color: #fff; padding: 30px; text-align: center;">
+            <h2 style="margin: 0; font-size: 24px;">🚨 Reminder: Your Live Session is Starting Soon!</h2>
+          </div>
+          <div style="padding: 30px;">
+            <p style="font-size: 16px; color: #374151; margin-top: 0;">Hi ${userName},</p>
+            <p style="font-size: 16px; color: #374151; line-height: 1.5;">Thank you for your purchase! This is an immediate reminder that your live session, "<b>${contentItem.title}</b>", is scheduled to begin soon.</p>
+            <p style="font-size: 16px; color: #374151; line-height: 1.5;"><b>Scheduled Time:</b> ${scheduledDate.toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}</p>
+            <p style="font-size: 16px; color: #374151; line-height: 1.5;">You can access the session details and join link directly from the masterclass page:</p>
+            <div style="text-align: center; margin: 20px 0;">
+              <a href="${siteUrl}/masterclasses/${masterclass.id}" target="_blank" style="display: inline-block; padding: 12px 24px; background: linear-gradient(to right, #0ea5e9, #f97316); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600;">
+                Go to Masterclass
+              </a>
+            </div>
+            <p style="margin-top: 20px; font-size: 0.9em; color: #777;">We're excited to see you there!</p>
+          </div>
+          <div style="padding: 20px; text-align: center; font-size: 12px; color: #9ca3af; background-color: #f9fafb;"><p>&copy; ${new Date().getFullYear()} Ragavachika. All rights reserved.</p></div>
         </div>
       </body>
       </html>

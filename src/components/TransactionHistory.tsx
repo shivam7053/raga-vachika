@@ -92,39 +92,39 @@ export default function TransactionHistory({ userId }: TransactionHistoryProps) 
   if (loading) {
     return (
       <div className="flex items-center justify-center p-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+    <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-6 border border-white/20 dark:border-gray-800">
       {/* Header */}
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-orange-600 dark:from-sky-400 dark:to-orange-400 mb-2">
           Transaction History
         </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-sm text-gray-600 dark:text-gray-300">
           View all your payment transactions and their status
         </p>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+      <div className="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
         {["all", "success", "failed", "pending"].map((status) => (
           <button
             key={status}
             onClick={() =>
               setFilter(status as "all" | "success" | "failed" | "pending")
             }
-            className={`px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition ${
+            className={`px-4 py-2 rounded-full font-medium text-sm whitespace-nowrap transition-all ${
               filter === status
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                ? "bg-gradient-to-r from-sky-500 to-orange-500 text-white shadow-md"
+                : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
             }`}
           >
             {status.charAt(0).toUpperCase() + status.slice(1)}
-            <span className="ml-2 text-xs">
+            <span className="ml-2 text-xs opacity-80">
               (
               {status === "all"
                 ? transactions.length
@@ -138,7 +138,7 @@ export default function TransactionHistory({ userId }: TransactionHistoryProps) 
       {/* Transactions */}
       {filteredTransactions.length === 0 ? (
         <div className="text-center py-12">
-          <CreditCard className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+          <CreditCard className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
           <p className="text-gray-600 dark:text-gray-400 mb-2">
             No transactions found
           </p>
@@ -153,44 +153,44 @@ export default function TransactionHistory({ userId }: TransactionHistoryProps) 
           {filteredTransactions.map((transaction) => (
             <div
               key={transaction.orderId}
-              className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition"
+              className="bg-white/50 dark:bg-gray-800/50 border border-sky-100 dark:border-blue-900 rounded-2xl p-5 hover:shadow-lg transition-all hover:-translate-y-0.5"
             >
               <div className="flex items-start justify-between gap-4">
                 {/* Left */}
-                <div className="flex gap-3 flex-1 min-w-0">
-                  <div className="flex-shrink-0 mt-1">
+                <div className="flex gap-4 flex-1 min-w-0">
+                  <div className="flex-shrink-0 mt-1 p-2 bg-white dark:bg-gray-700 rounded-full shadow-sm">
                     {getStatusIcon(transaction.status)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-1 truncate">
+                    <h3 className="font-bold text-gray-900 dark:text-white mb-1 truncate text-lg">
                       {transaction.masterclassTitle}
                     </h3>
 
-                    <div className="flex flex-wrap gap-3 text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" />
+                    <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-300 mb-3">
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="w-4 h-4 text-sky-500" />
                         {formatDate(transaction.timestamp)}
                       </span>
-                      <span className="flex items-center gap-1">
-                        <CreditCard className="w-4 h-4" />
+                      <span className="flex items-center gap-1.5">
+                        <CreditCard className="w-4 h-4 text-orange-500" />
                         {transaction.method.toUpperCase()}
                       </span>
                     </div>
 
                     {transaction.failureReason && (
-                      <div className="flex items-start gap-2 mt-2 p-2 bg-red-50 dark:bg-red-900 dark:bg-opacity-20 rounded-md">
+                      <div className="flex items-start gap-2 mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-xl">
                         <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
-                        <p className="text-xs text-red-700 dark:text-red-400">
+                        <p className="text-xs text-red-700 dark:text-red-300">
                           {transaction.failureReason}
                         </p>
                       </div>
                     )}
 
-                    <div className="mt-2 text-xs text-gray-500 dark:text-gray-500 font-mono">
+                    <div className="mt-3 text-xs text-gray-400 dark:text-gray-500 font-mono break-all">
                       Order: {transaction.orderId}
                       {transaction.paymentId && (
                         <>
-                          <br />
+                          <span className="mx-2">•</span>
                           Payment: {transaction.paymentId}
                         </>
                       )}
@@ -199,12 +199,12 @@ export default function TransactionHistory({ userId }: TransactionHistoryProps) 
                 </div>
 
                 {/* Right */}
-                <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                <div className="flex flex-col items-end gap-3 flex-shrink-0">
                   <span className={getStatusBadge(transaction.status)}>
                     {transaction.status.toUpperCase()}
                   </span>
-                  <div className="flex items-center gap-1 text-lg font-bold text-gray-900 dark:text-white">
-                    <IndianRupee className="w-5 h-5" />
+                  <div className="flex items-center gap-1 text-xl font-bold text-gray-900 dark:text-white">
+                    <IndianRupee className="w-5 h-5 text-gray-400" />
                     {transaction.amount}
                   </div>
                 </div>
@@ -216,31 +216,31 @@ export default function TransactionHistory({ userId }: TransactionHistoryProps) 
 
       {/* Summary */}
       {transactions.length > 0 && (
-        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div className="mt-8 pt-6 border-t border-sky-100 dark:border-blue-900">
           <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="text-2xl font-bold text-green-600">
+            <div className="p-4 rounded-2xl bg-green-50 dark:bg-green-900/10">
+              <div className="text-3xl font-bold text-green-600 dark:text-green-400">
                 {transactions.filter((t) => t.status === "success").length}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+              <div className="text-xs font-medium text-green-800 dark:text-green-300 mt-1 uppercase tracking-wide">
                 Successful
               </div>
             </div>
 
-            <div>
-              <div className="text-2xl font-bold text-red-600">
+            <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-900/10">
+              <div className="text-3xl font-bold text-red-600 dark:text-red-400">
                 {transactions.filter((t) => t.status === "failed").length}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+              <div className="text-xs font-medium text-red-800 dark:text-red-300 mt-1 uppercase tracking-wide">
                 Failed
               </div>
             </div>
 
-            <div>
-              <div className="text-2xl font-bold text-yellow-600">
+            <div className="p-4 rounded-2xl bg-yellow-50 dark:bg-yellow-900/10">
+              <div className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
                 {transactions.filter((t) => t.status === "pending").length}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+              <div className="text-xs font-medium text-yellow-800 dark:text-yellow-300 mt-1 uppercase tracking-wide">
                 Pending
               </div>
             </div>

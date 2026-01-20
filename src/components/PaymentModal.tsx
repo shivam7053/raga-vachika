@@ -2,7 +2,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, CreditCard, Shield, CheckCircle, AlertCircle } from "lucide-react";
+import { X, CreditCard, Shield, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
 import { PaymentService } from "@/services/paymentService";
 import {
   Masterclass,
@@ -320,43 +321,53 @@ export default function PaymentModal({
     return purchaseAmount === 0 ? "Register Now" : `Pay ₹${purchaseAmount}`;
   };
 
+  const paymentMethods = [
+    { id: "dummy", name: "Dummy Payment", icon: <CreditCard className="w-4 h-4" /> },
+    { id: "razorpay", name: "Razorpay", icon: <Shield className="w-4 h-4" /> }
+  ];
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-2">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-sm w-full overflow-hidden">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <motion.div 
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 20, scale: 0.95 }}
+        className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-white/20 dark:border-gray-800"
+      >
 
         {/* HEADER */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 text-white relative">
+        <div className="bg-gradient-to-r from-sky-500 to-orange-500 p-4 text-white relative">
           <button
             onClick={handleClose}
             disabled={processing}
-            className="absolute top-3 right-3 hover:bg-white hover:bg-opacity-20 rounded-full p-1.5 transition disabled:opacity-50"
+            className="absolute top-3 right-3 hover:bg-white/20 rounded-full p-1.5 transition disabled:opacity-50"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
 
-          <h2 className="text-lg font-bold mb-1">Complete Purchase</h2>
-          <p className="text-blue-100 text-xs">
+          <h2 className="text-lg font-bold mb-1">{getHeaderText()}</h2>
+          <p className="text-white/80 text-xs">
             {purchaseAmount === 0
               ? "Complete your free registration"
               : "Secure payment powered by Razorpay"}
           </p>
         </div>
 
-        <div className="p-4 space-y-4">
+        <div className="p-6 space-y-6">
 
           {/* Purchase Info */}
-          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-            <span className="inline-block bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 text-[10px] font-semibold px-2 py-0.5 rounded mb-1">
+          <div className="bg-sky-50/50 dark:bg-blue-900/20 rounded-xl p-4 border border-sky-100 dark:border-blue-800">
+            <span className="inline-block bg-sky-100 dark:bg-sky-900/50 text-sky-800 dark:text-sky-200 text-[10px] font-semibold px-2 py-0.5 rounded-full mb-2">
               {getPurchaseTypeLabel()}
             </span>
 
-            <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 mb-1 text-sm">
+            <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 mb-2">
               {purchaseTitle}
             </h3>
 
-            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
-              <span className="text-gray-600 dark:text-gray-300 text-xs">Total Amount</span>
-              <span className="text-xl font-bold text-gray-900 dark:text-white">
+            <div className="mt-4 pt-4 border-t border-sky-200 dark:border-blue-800 flex justify-between items-center">
+              <span className="text-gray-600 dark:text-gray-300 text-sm font-medium">Total</span>
+              <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-orange-600 dark:from-sky-400 dark:to-orange-400">
                 {purchaseAmount === 0 ? "FREE" : `₹${purchaseAmount}`}
               </span>
             </div>
@@ -364,32 +375,32 @@ export default function PaymentModal({
 
           {/* Info Box */}
           {purchaseAmount > 0 && (
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-2 rounded-md">
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-2 rounded-lg">
               <div className="flex items-start gap-2">
                 <CheckCircle className="w-3.5 h-3.5 text-blue-600 mt-0.5 flex-shrink-0" />
-                <p className="text-[11px] text-blue-800 dark:text-blue-200">You'll receive a confirmation email with access details.</p>
+                <p className="text-xs text-blue-800 dark:text-blue-200">You'll receive a confirmation email with access details.</p>
               </div>
             </div>
           )}
 
           {/* ERROR BLOCK */}
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700 p-3 rounded-md">
-              <div className="flex gap-2">
-                <AlertCircle className="text-red-600 dark:text-red-400 w-4 h-4" />
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3 rounded-lg">
+              <div className="flex gap-3">
+                <AlertCircle className="text-red-500 w-5 h-5 mt-0.5 flex-shrink-0" />
                 <div className="flex-1">
-                  <p className="font-semibold text-red-700 dark:text-red-300 text-xs">
+                  <p className="font-semibold text-red-700 dark:text-red-300 text-sm">
                     Payment Error
                   </p>
-                  <p className="text-[11px] text-red-600 dark:text-red-400 mt-1">
+                  <p className="text-xs text-red-600 dark:text-red-400 mt-1">
                     {error}
                   </p>
                 </div>
                 <button
                   onClick={() => setError("")}
-                  className="text-red-600 dark:text-red-400 hover:text-red-800"
+                  className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -398,68 +409,51 @@ export default function PaymentModal({
           {/* Payment Methods */}
           {purchaseAmount > 0 && (
             <div>
-              <label className="text-xs font-medium mb-2 block text-gray-700 dark:text-gray-300">
-                Select Payment Method *
+              <label className="text-sm font-medium mb-3 block text-gray-800 dark:text-gray-200">
+                Select Payment Method
               </label>
 
-              <div className="space-y-2">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("dummy")}
-                  disabled={processing}
-                  className={`w-full p-3 rounded-md border flex items-center gap-2 text-sm ${
-                    paymentMethod === "dummy"
-                      ? "border-blue-600 bg-blue-50 dark:bg-blue-900/30"
-                      : "border-gray-300 dark:border-gray-600"
-                  }`}
-                >
-                  <CreditCard className="w-4 h-4" />
-                  <span className="text-xs">Dummy Payment</span>
-                  {paymentMethod === "dummy" && (
-                    <CheckCircle className="w-4 h-4 text-blue-600" />
-                  )}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("razorpay")}
-                  disabled={processing || !razorpayLoaded}
-                  className={`w-full p-3 rounded-md border flex items-center gap-2 text-sm ${
-                    paymentMethod === "razorpay"
-                      ? "border-blue-600 bg-blue-50 dark:bg-blue-900/30"
-                      : "border-gray-300 dark:border-gray-600"
-                  }`}
-                >
-                  <Shield className="w-4 h-4" />
-                  <span className="text-xs">Razorpay</span>
-                  {paymentMethod === "razorpay" && (
-                    <CheckCircle className="w-4 h-4 text-blue-600" />
-                  )}
-                </button>
+              <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
+                {paymentMethods.map((method) => (
+                  <button
+                    key={method.id}
+                    type="button"
+                    onClick={() => setPaymentMethod(method.id as "dummy" | "razorpay")}
+                    disabled={processing || (method.id === 'razorpay' && !razorpayLoaded)}
+                    className="relative px-4 py-2 text-sm font-medium transition-colors group disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {paymentMethod === method.id && (
+                      <motion.span
+                        layoutId="payment-underline"
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-sky-500 to-orange-500"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+                    <span className={`flex items-center gap-2 ${
+                      paymentMethod === method.id
+                        ? "text-orange-600 dark:text-sky-400"
+                        : "text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                    }`}>
+                      {method.icon}
+                      {method.name}
+                    </span>
+                  </button>
+                ))}
               </div>
             </div>
           )}
 
           {/* Action Buttons */}
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={handleClose}
-              disabled={processing}
-              className="flex-1 py-2 border rounded-md text-xs font-semibold"
-            >
-              Cancel
-            </button>
-
+          <div className="pt-2">
             <button
               type="button"
               onClick={handlePayment}
               disabled={processing || (purchaseAmount > 0 && !paymentMethod)}
-              className="flex-1 py-2 bg-blue-600 text-white rounded-md text-xs font-semibold flex items-center justify-center gap-1"
+              className="w-full inline-flex items-center justify-center rounded-lg text-sm font-semibold ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gradient-to-r from-sky-500 to-orange-500 text-white hover:from-sky-600 hover:to-orange-600 h-11 px-4 py-2 shadow-lg shadow-orange-500/20"
             >
               {processing ? (
                 <>
-                  <div className="animate-spin w-4 h-4 border-b-2 border-white rounded-full"></div>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Processing...
                 </>
               ) : (
@@ -467,9 +461,8 @@ export default function PaymentModal({
               )}
             </button>
           </div>
-
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

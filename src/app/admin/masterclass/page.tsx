@@ -17,8 +17,11 @@ import {
   MasterclassContent,
   YoutubeContent,
   ZoomContent,
+  MasterclassNote,
+  MasterclassTest,
+  MCQ,
 } from "@/types/masterclass";
-import { Plus, Trash2, Edit2, Video, X, AlertCircle } from "lucide-react";
+import { Plus, Trash2, Edit2, Video, X, AlertCircle, FileText, ClipboardCheck, CheckSquare, HelpCircle } from "lucide-react";
 
 export default function AdminMasterclasses() {
   const router = useRouter();
@@ -53,6 +56,23 @@ export default function AdminMasterclasses() {
     number | null
   >(null);
 
+  // ✅ NEW: State for Notes
+  const [currentNotes, setCurrentNotes] = useState<MasterclassNote[]>([]);
+  const [showNoteModal, setShowNoteModal] = useState(false);
+  const [noteFormData, setNoteFormData] = useState<Partial<MasterclassNote>>({ title: '', url: '' });
+  const [editingNoteIndex, setEditingNoteIndex] = useState<number | null>(null);
+
+  // ✅ NEW: State for Tests
+  const [currentTests, setCurrentTests] = useState<MasterclassTest[]>([]);
+  const [showTestModal, setShowTestModal] = useState(false);
+  const [testFormData, setTestFormData] = useState<Partial<MasterclassTest>>({
+    title: '', description: '', passingPercentage: 50, durationMinutes: 30, questions: []
+  });
+  const [editingTestIndex, setEditingTestIndex] = useState<number | null>(null);
+  const [showQuestionForm, setShowQuestionForm] = useState(false); // Toggle question editor inside test modal
+  const [questionFormData, setQuestionFormData] = useState<Partial<MCQ>>({ question: '', options: ['', '', '', ''], correctOptionIndex: 0, explanation: '' });
+  const [editingQuestionIndex, setEditingQuestionIndex] = useState<number | null>(null);
+
   const fetchClasses = async () => {
     try {
       setLoading(true);
@@ -79,6 +99,8 @@ export default function AdminMasterclasses() {
           content: data.content || [],
           purchased_by_users: purchasedByUsers,
           demo_video_url: data.demo_video_url || "", // ✅ NEW: Fetch the demo video URL
+          notes: data.notes || [],
+          tests: data.tests || [],
         } as Masterclass);
       }
 
@@ -187,6 +209,8 @@ export default function AdminMasterclasses() {
         thumbnail_url: formData.thumbnail_url,
         demo_video_url: formData.demo_video_url, // ✅ NEW: Save the demo video URL
         content: currentContent,
+        notes: currentNotes,
+        tests: currentTests,
       };
 
       if (editingId) {
@@ -233,6 +257,8 @@ export default function AdminMasterclasses() {
         demo_video_url: "",
       });
       setCurrentContent([]);
+      setCurrentNotes([]);
+      setCurrentTests([]);
       setEditingId(null);
       setNotifyUsers(false); // ✅ NEW: Reset notification state
       fetchClasses();
@@ -267,6 +293,8 @@ export default function AdminMasterclasses() {
     });
 
     setCurrentContent(cls.content || []);
+    setCurrentNotes(cls.notes || []);
+    setCurrentTests(cls.tests || []);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -284,6 +312,8 @@ export default function AdminMasterclasses() {
     });
     setNotifyUsers(false); // ✅ NEW: Reset notification state
     setCurrentContent([]);
+    setCurrentNotes([]);
+    setCurrentTests([]);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -292,6 +322,100 @@ export default function AdminMasterclasses() {
       ...prev,
       [name]: e.target.type === 'number' ? Number(value) : value,
     }));
+  };
+
+  // --- NOTES HANDLERS ---
+  const handleSaveNote = () => {
+    if (!noteFormData.title || !noteFormData.url) return alert("Note Title and URL are required");
+    const newNote = { 
+      id: noteFormData.id || `note_${Date.now()}`, 
+      title: noteFormData.title, 
+      url: noteFormData.url 
+    } as MasterclassNote;
+    
+    if (editingNoteIndex !== null) {
+      const updated = [...currentNotes];
+      updated[editingNoteIndex] = newNote;
+      setCurrentNotes(updated);
+    } else {
+      setCurrentNotes([...currentNotes, newNote]);
+    }
+    setShowNoteModal(false);
+    setNoteFormData({ title: '', url: '' });
+    setEditingNoteIndex(null);
+  };
+
+  const handleDeleteNote = (index: number) => {
+    if (confirm("Delete this note?")) {
+      setCurrentNotes(currentNotes.filter((_, i) => i !== index));
+    }
+  };
+
+  // --- TESTS HANDLERS ---
+  const handleSaveTest = () => {
+    if (!testFormData.title) return alert("Test Title is required");
+    const newTest = {
+      id: testFormData.id || `test_${Date.now()}`,
+      title: testFormData.title,
+      description: testFormData.description,
+      passingPercentage: Number(testFormData.passingPercentage),
+      durationMinutes: Number(testFormData.durationMinutes),
+      questions: testFormData.questions || []
+    } as MasterclassTest;
+
+    if (editingTestIndex !== null) {
+      const updated = [...currentTests];
+      updated[editingTestIndex] = newTest;
+      setCurrentTests(updated);
+    } else {
+      setCurrentTests([...currentTests, newTest]);
+    }
+    setShowTestModal(false);
+    setTestFormData({ title: '', description: '', passingPercentage: 50, durationMinutes: 30, questions: [] });
+    setEditingTestIndex(null);
+  };
+
+  const handleDeleteTest = (index: number) => {
+    if (confirm("Delete this test?")) {
+      setCurrentTests(currentTests.filter((_, i) => i !== index));
+    }
+  };
+
+  // --- QUESTION HANDLERS (Inside Test Modal) ---
+  const handleSaveQuestion = () => {
+    if (!questionFormData.question) return alert("Question text is required");
+    const validOptions = questionFormData.options?.filter(o => o.trim() !== "") || [];
+    if (validOptions.length < 2) return alert("At least 2 options are required");
+
+    const newQuestion = {
+      id: questionFormData.id || `q_${Date.now()}`,
+      question: questionFormData.question,
+      options: questionFormData.options || [],
+      correctOptionIndex: Number(questionFormData.correctOptionIndex),
+      explanation: questionFormData.explanation
+    } as MCQ;
+
+    const currentQuestions = testFormData.questions || [];
+    let updatedQuestions = [...currentQuestions];
+
+    if (editingQuestionIndex !== null) {
+      updatedQuestions[editingQuestionIndex] = newQuestion;
+    } else {
+      updatedQuestions.push(newQuestion);
+    }
+
+    setTestFormData({ ...testFormData, questions: updatedQuestions });
+    setShowQuestionForm(false);
+    setQuestionFormData({ question: '', options: ['', '', '', ''], correctOptionIndex: 0, explanation: '' });
+    setEditingQuestionIndex(null);
+  };
+
+  const handleDeleteQuestion = (index: number) => {
+    if (confirm("Delete this question?")) {
+      const questions = testFormData.questions || [];
+      const updated = questions.filter((_, i) => i !== index);
+      setTestFormData({ ...testFormData, questions: updated });
+    }
   };
 
   // Calculate pricing info from content
@@ -415,6 +539,62 @@ export default function AdminMasterclasses() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Notes Section */}
+        <div className="mt-6 border-t pt-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2"><FileText className="w-5 h-5" /> Notes ({currentNotes.length})</h3>
+            <button type="button" onClick={() => { setNoteFormData({ title: '', url: '' }); setEditingNoteIndex(null); setShowNoteModal(true); }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2 text-sm">
+              <Plus className="w-4 h-4" /> Add Note
+            </button>
+          </div>
+          <div className="space-y-2">
+            {currentNotes.map((note, index) => (
+              <div key={note.id} className="bg-gray-50 p-3 rounded-lg flex justify-between items-center border border-gray-200">
+                <div>
+                  <p className="font-semibold text-sm">{note.title}</p>
+                  <a href={note.url} target="_blank" rel="noreferrer" className="text-xs text-blue-600 hover:underline truncate block max-w-md">{note.url}</a>
+                </div>
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => { setNoteFormData(note); setEditingNoteIndex(index); setShowNoteModal(true); }} className="text-blue-600 hover:text-blue-800"><Edit2 className="w-4 h-4" /></button>
+                  <button type="button" onClick={() => handleDeleteNote(index)} className="text-red-600 hover:text-red-800"><Trash2 className="w-4 h-4" /></button>
+                </div>
+              </div>
+            ))}
+            {currentNotes.length === 0 && <p className="text-sm text-gray-500 italic">No notes added yet.</p>}
+          </div>
+        </div>
+
+        {/* Tests Section */}
+        <div className="mt-6 border-t pt-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2"><ClipboardCheck className="w-5 h-5" /> Tests ({currentTests.length})</h3>
+            <button type="button" onClick={() => { 
+              setTestFormData({ title: '', description: '', passingPercentage: 50, durationMinutes: 30, questions: [] }); 
+              setEditingTestIndex(null); 
+              setShowTestModal(true); 
+            }} className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2 text-sm">
+              <Plus className="w-4 h-4" /> Add Test
+            </button>
+          </div>
+          <div className="space-y-2">
+            {currentTests.map((test, index) => (
+              <div key={test.id} className="bg-gray-50 p-3 rounded-lg flex justify-between items-center border border-gray-200">
+                <div>
+                  <p className="font-semibold text-sm">{test.title}</p>
+                  <p className="text-xs text-gray-600">
+                    {test.questions.length} Questions • {test.durationMinutes} mins • Pass: {test.passingPercentage}%
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => { setTestFormData(test); setEditingTestIndex(index); setShowTestModal(true); }} className="text-blue-600 hover:text-blue-800"><Edit2 className="w-4 h-4" /></button>
+                  <button type="button" onClick={() => handleDeleteTest(index)} className="text-red-600 hover:text-red-800"><Trash2 className="w-4 h-4" /></button>
+                </div>
+              </div>
+            ))}
+            {currentTests.length === 0 && <p className="text-sm text-gray-500 italic">No tests added yet.</p>}
           </div>
         </div>
 
@@ -611,6 +791,138 @@ export default function AdminMasterclasses() {
                 {editingContentIndex !== null ? "Update Content" : "Add Content"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Note Modal */}
+      {showNoteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold">{editingNoteIndex !== null ? 'Edit Note' : 'Add Note'}</h3>
+              <button onClick={() => setShowNoteModal(false)} className="text-gray-500 hover:text-gray-700"><X className="w-6 h-6" /></button>
+            </div>
+            <div className="space-y-4">
+              <input type="text" placeholder="Note Title *" value={noteFormData.title || ""} onChange={(e) => setNoteFormData({ ...noteFormData, title: e.target.value })} className="w-full border p-3 rounded-lg" />
+              <input type="text" placeholder="Google Drive/PDF URL *" value={noteFormData.url || ""} onChange={(e) => setNoteFormData({ ...noteFormData, url: e.target.value })} className="w-full border p-3 rounded-lg" />
+              <button onClick={handleSaveNote} className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700">Save Note</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Test Modal */}
+      {showTestModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold">{editingTestIndex !== null ? 'Edit Test' : 'Add Test'}</h3>
+              <button onClick={() => setShowTestModal(false)} className="text-gray-500 hover:text-gray-700"><X className="w-6 h-6" /></button>
+            </div>
+
+            {!showQuestionForm ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input type="text" placeholder="Test Title *" value={testFormData.title || ""} onChange={(e) => setTestFormData({ ...testFormData, title: e.target.value })} className="w-full border p-3 rounded-lg" />
+                  <input type="text" placeholder="Description" value={testFormData.description || ""} onChange={(e) => setTestFormData({ ...testFormData, description: e.target.value })} className="w-full border p-3 rounded-lg" />
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium whitespace-nowrap">Pass %:</label>
+                    <input type="number" placeholder="Passing %" value={testFormData.passingPercentage || 0} onChange={(e) => setTestFormData({ ...testFormData, passingPercentage: Number(e.target.value) })} className="w-full border p-3 rounded-lg" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium whitespace-nowrap">Mins:</label>
+                    <input type="number" placeholder="Duration (mins)" value={testFormData.durationMinutes || 0} onChange={(e) => setTestFormData({ ...testFormData, durationMinutes: Number(e.target.value) })} className="w-full border p-3 rounded-lg" />
+                  </div>
+                </div>
+
+                <div className="border-t pt-4 mt-4">
+                  <div className="flex justify-between items-center mb-3">
+                    <h4 className="font-semibold">Questions ({testFormData.questions?.length || 0})</h4>
+                    <button onClick={() => { 
+                      setQuestionFormData({ question: '', options: ['', '', '', ''], correctOptionIndex: 0, explanation: '' }); 
+                      setEditingQuestionIndex(null); 
+                      setShowQuestionForm(true); 
+                    }} className="bg-green-600 text-white px-3 py-1.5 rounded text-sm hover:bg-green-700 flex items-center gap-1">
+                      <Plus className="w-4 h-4" /> Add Question
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-2 max-h-60 overflow-y-auto bg-gray-50 p-2 rounded-lg">
+                    {testFormData.questions?.map((q, idx) => (
+                      <div key={q.id} className="bg-white p-3 rounded border border-gray-200 flex justify-between items-start">
+                        <div>
+                          <p className="font-medium text-sm">{idx + 1}. {q.question}</p>
+                          <p className="text-xs text-gray-500">{q.options.length} options • Correct: Option {q.correctOptionIndex + 1}</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => { setQuestionFormData(q); setEditingQuestionIndex(idx); setShowQuestionForm(true); }} className="text-blue-600 hover:text-blue-800"><Edit2 className="w-3 h-3" /></button>
+                          <button onClick={() => handleDeleteQuestion(idx)} className="text-red-600 hover:text-red-800"><Trash2 className="w-3 h-3" /></button>
+                        </div>
+                      </div>
+                    ))}
+                    {(!testFormData.questions || testFormData.questions.length === 0) && <p className="text-center text-sm text-gray-400 py-4">No questions added yet.</p>}
+                  </div>
+                </div>
+
+                <button onClick={handleSaveTest} className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 mt-4">Save Test</button>
+              </div>
+            ) : (
+              // Question Form
+              <div className="space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div className="flex justify-between items-center mb-2">
+                  <h4 className="font-bold text-lg">{editingQuestionIndex !== null ? 'Edit Question' : 'New Question'}</h4>
+                  <button onClick={() => setShowQuestionForm(false)} className="text-sm text-gray-500 hover:text-gray-700">Cancel</button>
+                </div>
+                
+                <textarea placeholder="Question Text *" value={questionFormData.question || ""} onChange={(e) => setQuestionFormData({ ...questionFormData, question: e.target.value })} className="w-full border p-3 rounded-lg" rows={2} />
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold">Options</label>
+                  {questionFormData.options?.map((opt, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <span className="text-sm font-mono w-6">{idx + 1}.</span>
+                      <input 
+                        type="text" 
+                        value={opt} 
+                        onChange={(e) => {
+                          const newOptions = [...(questionFormData.options || [])];
+                          newOptions[idx] = e.target.value;
+                          setQuestionFormData({ ...questionFormData, options: newOptions });
+                        }}
+                        className="flex-1 border p-2 rounded"
+                        placeholder={`Option ${idx + 1}`}
+                      />
+                      <input 
+                        type="radio" 
+                        name="correctOption" 
+                        checked={questionFormData.correctOptionIndex === idx} 
+                        onChange={() => setQuestionFormData({ ...questionFormData, correctOptionIndex: idx })}
+                        className="w-4 h-4 text-green-600 focus:ring-green-500"
+                      />
+                    </div>
+                  ))}
+                  <div className="flex justify-end">
+                    <p className="text-xs text-gray-500">* Select the radio button for the correct answer</p>
+                  </div>
+                </div>
+
+                <textarea 
+                  placeholder="Explanation (Optional - shown after test)" 
+                  value={questionFormData.explanation || ""} 
+                  onChange={(e) => setQuestionFormData({ ...questionFormData, explanation: e.target.value })} 
+                  className="w-full border p-3 rounded-lg" 
+                  rows={2} 
+                />
+
+                <div className="flex gap-3 pt-2">
+                  <button onClick={() => setShowQuestionForm(false)} className="flex-1 bg-gray-300 text-gray-800 py-2 rounded-lg font-semibold hover:bg-gray-400">Cancel</button>
+                  <button onClick={handleSaveQuestion} className="flex-1 bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700">
+                    {editingQuestionIndex !== null ? 'Update Question' : 'Add Question'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

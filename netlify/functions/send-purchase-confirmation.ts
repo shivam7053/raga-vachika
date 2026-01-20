@@ -126,9 +126,9 @@ export const handler: Handler = async (event, context) => {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Purchase Confirmation</title>
       <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #f3f4f6; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 20px; background-color: #f7fafc; }
         .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .header { background-color: #4f46e5; color: #ffffff; padding: 30px; text-align: center; }
+        .header { background: linear-gradient(to right, #0ea5e9, #f97316); color: #ffffff; padding: 30px; text-align: center; }
         .content { padding: 30px; }
         .footer { padding: 20px; text-align: center; font-size: 12px; color: #9ca3af; background-color: #f9fafb; }
       </style>
@@ -160,14 +160,14 @@ export const handler: Handler = async (event, context) => {
             You can always access your masterclass content by visiting the link below:
           </p>
           <div style="text-align: center; margin: 20px 0;">
-            <a href="${process.env.SITE_URL}/masterclasses/${masterclass.id}" target="_blank" style="display: inline-block; padding: 12px 24px; background-color: #16a34a; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600;">
+            <a href="${process.env.SITE_URL}/masterclasses/${masterclass.id}" target="_blank" style="display: inline-block; padding: 12px 24px; background: linear-gradient(to right, #0ea5e9, #f97316); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600;">
               Go to Masterclass
             </a>
           </div>
         </div>
         <div class="footer">
           <p>If you have any questions, feel free to contact our support team.</p>
-          <p>&copy; ${new Date().getFullYear()} GrowPro. All rights reserved.</p>
+          <p>&copy; ${new Date().getFullYear()} Ragavachika. All rights reserved.</p>
         </div>
       </div>
     </body>

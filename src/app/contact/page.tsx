@@ -55,10 +55,14 @@ export default function ContactUsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-orange-50 dark:from-blue-950 dark:via-gray-900 dark:to-black relative overflow-hidden text-gray-900 dark:text-gray-100 transition-colors duration-300">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] right-[-5%] w-96 h-96 bg-orange-200/30 dark:bg-orange-900/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-96 h-96 bg-sky-200/30 dark:bg-blue-900/20 rounded-full blur-3xl" />
+      </div>
 
-
-      <div className="pt-24 pb-12">
+      <div className="pt-28 pb-12 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <motion.div
@@ -67,7 +71,7 @@ export default function ContactUsPage() {
             animate="animate"
             variants={fadeInUp}
           >
-            <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight">
+            <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-orange-600 dark:from-sky-400 dark:to-orange-400 mb-4 tracking-tight">
               Get in Touch
             </h1>
             <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-3xl mx-auto">
@@ -79,7 +83,7 @@ export default function ContactUsPage() {
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <motion.div
-              className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700"
+              className="bg-white/80 dark:bg-blue-900/20 backdrop-blur-md rounded-3xl shadow-xl p-8 border border-sky-100 dark:border-blue-800"
               initial="initial"
               animate="animate"
               variants={fadeInUp}
@@ -91,7 +95,7 @@ export default function ContactUsPage() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-base font-medium text-gray-800 dark:text-gray-200 mb-2">
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                       Full Name
                     </label>
                     <input
@@ -101,13 +105,13 @@ export default function ContactUsPage() {
                         setFormData((prev) => ({ ...prev, name: e.target.value }))
                       }
                       placeholder="Enter your full name"
-                      className="w-full px-4 py-3 border border-gray-400 dark:border-gray-600 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent text-base"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-black/20 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all outline-none"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-base font-medium text-gray-800 dark:text-gray-200 mb-2">
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                       Email Address
                     </label>
                     <input
@@ -117,14 +121,14 @@ export default function ContactUsPage() {
                         setFormData((prev) => ({ ...prev, email: e.target.value }))
                       }
                       placeholder="Enter your email"
-                      className="w-full px-4 py-3 border border-gray-400 dark:border-gray-600 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent text-base"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-black/20 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all outline-none"
                       required
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-base font-medium text-gray-800 dark:text-gray-200 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                     Subject
                   </label>
                   <input
@@ -134,13 +138,13 @@ export default function ContactUsPage() {
                       setFormData((prev) => ({ ...prev, subject: e.target.value }))
                     }
                     placeholder="Enter subject"
-                    className="w-full px-4 py-3 border border-gray-400 dark:border-gray-600 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent text-base"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-black/20 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all outline-none"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-base font-medium text-gray-800 dark:text-gray-200 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                     Message
                   </label>
                   <textarea
@@ -150,7 +154,7 @@ export default function ContactUsPage() {
                     }
                     rows={6}
                     placeholder="Write your message here..."
-                    className="w-full px-4 py-3 border border-gray-400 dark:border-gray-600 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent text-base"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-black/20 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all outline-none resize-none"
                     required
                   />
                 </div>
@@ -158,7 +162,7 @@ export default function ContactUsPage() {
                 <button
                   type="submit"
                   disabled={sending}
-                  className="w-full bg-blue-600 text-white py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-60 text-lg flex items-center justify-center gap-2"
+                  className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-4 rounded-xl font-bold shadow-lg hover:shadow-orange-500/30 transition-all duration-300 disabled:opacity-60 text-lg flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
                 >
                   <Send className="w-5 h-5" />
                   {sending ? "Sending..." : "Send Message"}
@@ -175,40 +179,40 @@ export default function ContactUsPage() {
             >
               <motion.div
                 variants={fadeInUp}
-                className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700"
+                className="bg-white/80 dark:bg-blue-900/20 backdrop-blur-md rounded-3xl shadow-xl p-8 border border-sky-100 dark:border-blue-800 h-full"
               >
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
                   Contact Information
                 </h3>
 
                 <div className="space-y-6 text-base">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
-                      <Mail className="w-6 h-6 text-blue-700 dark:text-blue-300" />
+                  <div className="flex items-center space-x-4 group p-4 rounded-2xl hover:bg-sky-50 dark:hover:bg-blue-900/30 transition-colors duration-300">
+                    <div className="w-12 h-12 bg-sky-100 dark:bg-blue-800 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <Mail className="w-6 h-6 text-sky-600 dark:text-sky-300" />
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900 dark:text-gray-100">Email</p>
-                      <p className="text-gray-700 dark:text-gray-300">India.growpro@gmail.com</p>
+                      <a href="mailto:India.growpro@gmail.com" className="text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">India.growpro@gmail.com</a>
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
-                      <Phone className="w-6 h-6 text-green-700 dark:text-green-300" />
+                  <div className="flex items-center space-x-4 group p-4 rounded-2xl hover:bg-sky-50 dark:hover:bg-blue-900/30 transition-colors duration-300">
+                    <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <Phone className="w-6 h-6 text-orange-600 dark:text-orange-400" />
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900 dark:text-gray-100">Phone</p>
-                      <p className="text-gray-700 dark:text-gray-300">+91 9625003045</p>
+                      <a href="tel:+919625003045" className="text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">+91 9625003045</a>
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
-                      <MapPin className="w-6 h-6 text-purple-700 dark:text-purple-300" />
+                  <div className="flex items-center space-x-4 group p-4 rounded-2xl hover:bg-sky-50 dark:hover:bg-blue-900/30 transition-colors duration-300">
+                    <div className="w-12 h-12 bg-sky-100 dark:bg-blue-800 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <MapPin className="w-6 h-6 text-sky-600 dark:text-sky-300" />
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900 dark:text-gray-100">Address</p>
-                      <p className="text-gray-700 dark:text-gray-300">New Delhi, India</p>
+                      <p className="text-gray-600 dark:text-gray-400">New Delhi, India</p>
                     </div>
                   </div>
                 </div>

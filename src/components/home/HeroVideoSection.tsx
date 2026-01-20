@@ -31,7 +31,7 @@ export default function HeroVideoSection() {
       ></video>
 
       {/* 🩵 Overlay for readability */}
-      <div className="absolute inset-0 bg-black/50 dark:bg-black/70"></div>
+      <div className="absolute inset-0 bg-blue-950/60 dark:bg-black/70 mix-blend-multiply"></div>
 
       {/* 🧠 Hero Content */}
       <div className="relative z-10 text-white px-6">
@@ -41,7 +41,7 @@ export default function HeroVideoSection() {
           transition={{ duration: 1 }}
           className="text-4xl md:text-6xl font-bold mb-4"
         >
-          Master Every Skill with <span className="text-blue-400">GrowPro</span>
+          Master Every Skill with <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-orange-500">Ragavachika</span>
         </motion.h1>
 
         <motion.p
@@ -68,7 +68,7 @@ export default function HeroVideoSection() {
           {[...topics, ...topics].map((topic, index) => (
             <span
               key={index}
-              className="px-4 py-2 bg-blue-500/20 backdrop-blur-md rounded-xl border border-blue-400/40"
+              className="px-4 py-2 bg-white/10 backdrop-blur-md rounded-xl border border-sky-500/30 text-sky-100 hover:bg-orange-500/20 hover:border-orange-500/50 transition-colors duration-300"
             >
               {topic}
             </span>
@@ -77,7 +77,7 @@ export default function HeroVideoSection() {
       </div>
 
       {/* 🩶 Gradient Fade at bottom */}
-      <div className="absolute bottom-0 w-full h-20 bg-gradient-to-t from-black to-transparent"></div>
+      <div className="absolute bottom-0 w-full h-20 bg-gradient-to-t from-gray-50 dark:from-gray-900 to-transparent"></div>
     </section>
   );
 }

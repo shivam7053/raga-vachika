@@ -46,6 +46,40 @@ export interface Transaction {
   updatedAt?: string; // ✅ NEW: Last update timestamp
 }
 
+// ✅ NEW: Test and Result types
+export interface MCQ {
+  id: string;
+  question: string;
+  options: string[];
+  correctOptionIndex: number; // 0-based index
+  explanation?: string;
+}
+
+export interface MasterclassTest {
+  id: string;
+  title: string;
+  description?: string;
+  questions: MCQ[];
+  passingPercentage?: number;
+  durationMinutes?: number;
+}
+
+export interface MasterclassNote {
+  id: string;
+  title: string;
+  url: string;
+}
+
+export interface TestResult {
+  testId: string;
+  masterclassId: string;
+  score: number;
+  totalQuestions: number;
+  percentage: number;
+  passed: boolean;
+  attemptedAt: string;
+}
+
 export interface UserProfile {
   id: string;
   email: string;
@@ -55,6 +89,7 @@ export interface UserProfile {
   bio?: string;
   linkedin?: string; // This field was also missing from the diff, adding it back.
   transactions?: Transaction[];
+  test_results?: TestResult[]; // ✅ NEW: Store user test attempts
   created_at: string;
   selectedCheckpoints?: {
     category: string;
@@ -158,6 +193,10 @@ export interface Masterclass {
   purchased_by_users: string[];
   remindersSent?: Record<string, boolean>;
   demo_video_url?: string; // Optional URL for a welcome/demo video
+
+  // ✅ NEW: Notes and Tests
+  notes?: MasterclassNote[]; // Support for multiple notes
+  tests?: MasterclassTest[];
 }
 
 // This is now an alias for MasterclassContent, can be removed if no longer used elsewhere.

@@ -163,17 +163,24 @@ async function send12HourReminder(
   const html = `
     <!DOCTYPE html>
     <html>
-    <body>
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-        <h2 style="color: #333;">⏰ Reminder: Your Live Session Starts in 12 Hours!</h2>
-        <p>Hi ${userName},</p>
-        <p>This is a reminder that your live session, "<b>${contentItem.title}</b>", as part of the "<b>${masterclass.title}</b>" masterclass, is scheduled to begin in approximately 12 hours.</p>
-        <p><b>Scheduled Time:</b> ${scheduledDate.toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}</p>
-        <p>You can access the session details and join link directly from the masterclass page:</p>
-        <a href="${process.env.SITE_URL}/masterclasses/${masterclass.id}" style="display: inline-block; padding: 10px 20px; background-color: #4f46e5; color: #fff; text-decoration: none; border-radius: 5px;">
-          Go to Masterclass
-        </a>
-        <p style="margin-top: 20px; font-size: 0.9em; color: #777;">We're excited to see you there!</p>
+    <body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f7fafc;">
+      <div style="max-width: 600px; margin: auto; background-color: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <div style="background: linear-gradient(to right, #0ea5e9, #f97316); color: #fff; padding: 30px; text-align: center;">
+          <h2 style="margin: 0; font-size: 24px;">⏰ Reminder: Your Live Session Starts in 12 Hours!</h2>
+        </div>
+        <div style="padding: 30px;">
+          <p style="font-size: 16px; color: #374151; margin-top: 0;">Hi ${userName},</p>
+          <p style="font-size: 16px; color: #374151; line-height: 1.5;">This is a reminder that your live session, "<b>${contentItem.title}</b>", as part of the "<b>${masterclass.title}</b>" masterclass, is scheduled to begin in approximately 12 hours.</p>
+          <p style="font-size: 16px; color: #374151; line-height: 1.5;"><b>Scheduled Time:</b> ${scheduledDate.toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}</p>
+          <p style="font-size: 16px; color: #374151; line-height: 1.5;">You can access the session details and join link directly from the masterclass page:</p>
+          <div style="text-align: center; margin: 20px 0;">
+            <a href="${process.env.SITE_URL}/masterclasses/${masterclass.id}" target="_blank" style="display: inline-block; padding: 12px 24px; background: linear-gradient(to right, #0ea5e9, #f97316); color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600;">
+              Go to Masterclass
+            </a>
+          </div>
+          <p style="margin-top: 20px; font-size: 0.9em; color: #777;">We're excited to see you there!</p>
+        </div>
+        <div style="padding: 20px; text-align: center; font-size: 12px; color: #9ca3af; background-color: #f9fafb;"><p>&copy; ${new Date().getFullYear()} Ragavachika. All rights reserved.</p></div>
       </div>
     </body>
     </html>
@@ -197,18 +204,25 @@ async function sendWelcomeAndReminder(
   const html = `
     <!DOCTYPE html>
     <html>
-    <body>
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-        <h2 style="color: #333;">✅ Welcome & Quick Reminder!</h2>
-        <p>Hi ${userName},</p>
-        <p>Thank you for enrolling in "<b>${masterclass.title}</b>"! We're excited to have you.</p>
-        <p>Your upcoming live session, "<b>${contentItem.title}</b>", is starting soon.</p>
-        <p><b>Scheduled Time:</b> ${scheduledDate.toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}</p>
-        <p>You can access the session details and join link directly from the masterclass page:</p>
-        <a href="${process.env.SITE_URL}/masterclasses/${masterclass.id}" style="display: inline-block; padding: 10px 20px; background-color: #4f46e5; color: #fff; text-decoration: none; border-radius: 5px;">
-          Go to Masterclass
-        </a>
-        <p style="margin-top: 20px; font-size: 0.9em; color: #777;">We're excited to see you there!</p>
+    <body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f7fafc;">
+      <div style="max-width: 600px; margin: auto; background-color: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <div style="background: linear-gradient(to right, #0ea5e9, #f97316); color: #fff; padding: 30px; text-align: center;">
+          <h2 style="margin: 0; font-size: 24px;">✅ Welcome & Quick Reminder!</h2>
+        </div>
+        <div style="padding: 30px;">
+          <p style="font-size: 16px; color: #374151; margin-top: 0;">Hi ${userName},</p>
+          <p style="font-size: 16px; color: #374151; line-height: 1.5;">Thank you for enrolling in "<b>${masterclass.title}</b>"! We're excited to have you.</p>
+          <p style="font-size: 16px; color: #374151; line-height: 1.5;">Your upcoming live session, "<b>${contentItem.title}</b>", is starting soon.</p>
+          <p style="font-size: 16px; color: #374151; line-height: 1.5;"><b>Scheduled Time:</b> ${scheduledDate.toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}</p>
+          <p style="font-size: 16px; color: #374151; line-height: 1.5;">You can access the session details and join link directly from the masterclass page:</p>
+          <div style="text-align: center; margin: 20px 0;">
+            <a href="${process.env.SITE_URL}/masterclasses/${masterclass.id}" target="_blank" style="display: inline-block; padding: 12px 24px; background: linear-gradient(to right, #0ea5e9, #f97316); color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600;">
+              Go to Masterclass
+            </a>
+          </div>
+          <p style="margin-top: 20px; font-size: 0.9em; color: #777;">We're excited to see you there!</p>
+        </div>
+        <div style="padding: 20px; text-align: center; font-size: 12px; color: #9ca3af; background-color: #f9fafb;"><p>&copy; ${new Date().getFullYear()} Ragavachika. All rights reserved.</p></div>
       </div>
     </body>
     </html>

@@ -28,34 +28,37 @@ export default function MasterclassSection({
 }: Props) {
   // --- NEW SORTING LOGIC ---
   // Prioritize masterclasses with upcoming Zoom sessions, sorted by the soonest date.
-  const getSoonestFutureZoomDate = (mc: Masterclass): Date | null => {
-    const now = new Date();
+  const getSoonestFutureZoomDate = (mc: Masterclass): number | null => {
+    const now = Date.now();
     const futureZoomDates = mc.content
-      .filter(c => c.source === 'zoom' && c.scheduled_date && new Date(c.scheduled_date) > now)
-      .map(c => new Date(c.scheduled_date!));
+      .filter(c => c.source === 'zoom' && c.scheduled_date)
+      .map(c => new Date(c.scheduled_date!).getTime())
+      .filter(t => !isNaN(t) && t > now);
 
     if (futureZoomDates.length === 0) return null;
-    return new Date(Math.min(...futureZoomDates.map(d => d.getTime())));
+    return Math.min(...futureZoomDates);
   };
 
   const sortedMasterclasses = [...masterclasses].sort((a, b) => {
-    const aSoonestDate = getSoonestFutureZoomDate(a);
-    const bSoonestDate = getSoonestFutureZoomDate(b);
+    const aSoonest = getSoonestFutureZoomDate(a);
+    const bSoonest = getSoonestFutureZoomDate(b);
 
     // If both have future zoom sessions, sort by the soonest date
-    if (aSoonestDate && bSoonestDate) {
-      return aSoonestDate.getTime() - bSoonestDate.getTime();
+    if (aSoonest !== null && bSoonest !== null) {
+      return aSoonest - bSoonest;
     }
     // Prioritize 'a' if it has a future zoom session and 'b' does not
-    if (aSoonestDate) return -1;
+    if (aSoonest !== null) return -1;
     // Prioritize 'b' if it has a future zoom session and 'a' does not
-    if (bSoonestDate) return 1;
+    if (bSoonest !== null) return 1;
 
     // Fallback: sort by most recently created
-    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    const dateA = new Date(a.created_at).getTime();
+    const dateB = new Date(b.created_at).getTime();
+    return (isNaN(dateB) ? 0 : dateB) - (isNaN(dateA) ? 0 : dateA);
   });
 
-  const displayedMasterclasses = sortedMasterclasses.slice(0, 4);
+  const displayedMasterclasses = sortedMasterclasses;
 
   // The old logic is now replaced:
   // const displayedMasterclasses = [
@@ -92,8 +95,8 @@ export default function MasterclassSection({
             className="
               mt-6 md:mt-0
               inline-flex items-center gap-2
-              bg-black text-white 
-              dark:bg-white dark:text-black
+              bg-orange-500 text-white 
+              dark:bg-sky-600 dark:text-white
               px-6 py-3 rounded-full font-semibold
               transition-all duration-300 
               shadow-md
@@ -101,8 +104,8 @@ export default function MasterclassSection({
               hover:scale-[1.07]
               hover:shadow-xl
 
-              hover:bg-gray-800
-              dark:hover:bg-gray-100
+              hover:bg-orange-600
+              dark:hover:bg-sky-500
             "
           >
             View All

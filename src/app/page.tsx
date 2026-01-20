@@ -7,18 +7,17 @@ import { useAuth } from "@/context/AuthContexts";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import HeroVideoSection from "@/components/home/HeroVideoSection";
-
 import MasterclassSection from "@/components/home/MasterclassSection";
-import WorkshopsTestimonialsSection from "@/components/home/WorkshopsTestimonialsSection";
-import CTAFooter from "@/components/home/CTAFooter";
+
+
 import BackgroundAnimation from "@/components/home/BackgroundAnimation";
-import TeachersCarousel from "@/components/home/TeachersCarousel";
+
 import FAQSection from "@/components/home/FAQSection";
 import StudentFeedback from "@/components/home/StudentFeedback";
 
 
 import { Masterclass, MasterclassContent } from "@/types/masterclass";
-import AchievementGoals from "@/components/home/AchievementGoals";
+
 
 export default function HomePage() {
   const [masterclasses, setMasterclasses] = useState<Masterclass[]>([]);
@@ -45,6 +44,9 @@ export default function HomePage() {
           created_at: data.created_at?.toDate()?.toISOString() || new Date().toISOString(),
           content: (data.content || []).sort((a: MasterclassContent, b: MasterclassContent) => a.order - b.order),
           purchased_by_users: data.purchased_by_users || [],
+          demo_video_url: data.demo_video_url || "",
+          notes: data.notes || [],
+          tests: data.tests || [],
         };
       });
 
@@ -65,23 +67,22 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 overflow-hidden relative text-gray-900 dark:text-gray-100">
       <BackgroundAnimation />
 
-      {/* AchievementGoals Section */}
+      {/* 1. Hero Video Section (Main Banner) */}
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.6 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
       >
-        <AchievementGoals />
+        <HeroVideoSection />
       </motion.div>
 
 
-      {/* Featured Masterclasses Section - Shows any 4 classes */}
+      {/* 3. Featured Masterclasses Section */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
+        viewport={{ once: true, amount: 0.1 }}
+        transition={{ duration: 0.6 }}
       >
         <MasterclassSection
           masterclasses={masterclasses}
@@ -90,34 +91,12 @@ export default function HomePage() {
         />
       </motion.div>
 
-
-
-      {/* Workshops & Testimonials */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
-      >
-        <WorkshopsTestimonialsSection />
-      </motion.div>
-
-      {/* Technology Teaching Carousel */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.6, delay: 0.5 }}
-      >
-        <HeroVideoSection />
-      </motion.div>
-
       {/* Student Feedback */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.6, delay: 0.6 }}
+        viewport={{ once: true, amount: 0.1 }}
+        transition={{ duration: 0.6 }}
       >
         <StudentFeedback />
       </motion.div>
@@ -126,21 +105,13 @@ export default function HomePage() {
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.6, delay: 0.7 }}
+        viewport={{ once: true, amount: 0.1 }}
+        transition={{ duration: 0.6 }}
       >
         <FAQSection />
       </motion.div>
 
-      {/* CTA Footer */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.6, delay: 0.8 }}
-      >
-        <CTAFooter />
-      </motion.div>
+      
     </div>
   );
 }

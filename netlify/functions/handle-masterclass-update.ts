@@ -77,7 +77,7 @@ function encodeSubject(subject: string) {
 
 function generateUpdateEmail(userName: string, masterclass: Masterclass, newContent: MasterclassContent[]): string {
   const newContentHtml = newContent.map(item => `
-    <div style="padding: 10px; border-left: 3px solid #4f46e5; margin-bottom: 10px; background-color: #f3f4f6;">
+    <div style="padding: 10px; border-left: 3px solid #0ea5e9; margin-bottom: 10px; background-color: #f3f4f6;">
       <p style="margin:0; font-weight: bold; color: #333;">${item.title}</p>
       <p style="margin:5px 0 0; font-size: 0.9em; color: #555;">
         Type: ${item.source === 'zoom' ? 'Live Zoom Session' : 'YouTube Video'}
@@ -89,17 +89,24 @@ function generateUpdateEmail(userName: string, masterclass: Masterclass, newCont
   return `
     <!DOCTYPE html>
     <html>
-    <body>
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-        <h2 style="color: #333;">🚀 Content Update for "${masterclass.title}"!</h2>
-        <p>Hi ${userName},</p>
-        <p>Great news! We've just added new content to a masterclass you're enrolled in. Here's what's new:</p>
-        ${newContentHtml}
-        <p>You can access this new content right now by visiting the masterclass page:</p>
-        <a href="${process.env.SITE_URL}/masterclasses/${masterclass.id}" style="display: inline-block; padding: 10px 20px; background-color: #16a34a; color: #fff; text-decoration: none; border-radius: 5px;">
-          View Updated Masterclass
-        </a>
-        <p style="margin-top: 20px; font-size: 0.9em; color: #777;">Happy learning!</p>
+    <body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f7fafc;">
+      <div style="max-width: 600px; margin: auto; background-color: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <div style="background: linear-gradient(to right, #0ea5e9, #f97316); color: #fff; padding: 30px; text-align: center;">
+          <h2 style="margin: 0; font-size: 24px;">🚀 Content Update for "${masterclass.title}"!</h2>
+        </div>
+        <div style="padding: 30px;">
+          <p style="font-size: 16px; color: #374151; margin-top: 0;">Hi ${userName},</p>
+          <p style="font-size: 16px; color: #374151; line-height: 1.5;">Great news! We've just added new content to a masterclass you're enrolled in. Here's what's new:</p>
+          ${newContentHtml}
+          <p style="font-size: 16px; color: #374151; line-height: 1.5;">You can access this new content right now by visiting the masterclass page:</p>
+          <div style="text-align: center; margin: 20px 0;">
+            <a href="${process.env.SITE_URL}/masterclasses/${masterclass.id}" target="_blank" style="display: inline-block; padding: 12px 24px; background: linear-gradient(to right, #0ea5e9, #f97316); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600;">
+              View Updated Masterclass
+            </a>
+          </div>
+          <p style="margin-top: 20px; font-size: 0.9em; color: #777;">Happy learning!</p>
+        </div>
+        <div style="padding: 20px; text-align: center; font-size: 12px; color: #9ca3af; background-color: #f9fafb;"><p>&copy; ${new Date().getFullYear()} Ragavachika. All rights reserved.</p></div>
       </div>
     </body>
     </html>

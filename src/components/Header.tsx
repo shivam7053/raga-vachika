@@ -1,4 +1,3 @@
-// components/Header.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -101,36 +100,32 @@ export default function Header({ transparent = false }: HeaderProps) {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         transparent
           ? "bg-transparent text-white"
-          : "bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-sm text-gray-800 dark:text-gray-100"
+          : "bg-gradient-to-r from-sky-50/90 via-white/90 to-orange-50/90 dark:from-blue-950/90 dark:to-blue-900/90 backdrop-blur-md shadow-md border-b border-orange-100 dark:border-blue-900 text-gray-800 dark:text-gray-100"
       }`}
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6 }}
+      transition={{ duration: 0.6, ease: "circOut" }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 shadow-sm"
+            className="flex items-center rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:rotate-1"
           >
             <img
               src={
-                !mounted
-                  ? "/logo_growpro.png"
-                  : theme === "dark" || resolvedTheme === "dark"
-                  ? "/white-logo.png"
-                  : "/logo_growpro.png"
+                "/logo.png"
               }
-              alt="GrowPro"
+              alt="Ragavachika"
               className="h-20 w-auto rounded-xl object-contain"
             />
           </Link>
 
           {/* Navigation */}
           <nav
-            className={`hidden md:flex items-center space-x-1 rounded-full px-3 py-2 transition-all ${
-              transparent ? "bg-white/10" : "bg-black dark:bg-gray-800"
+            className={`hidden md:flex items-center space-x-1 rounded-full px-2 py-1 transition-all ${
+              transparent ? "bg-white/10 backdrop-blur-sm" : "bg-transparent"
             }`}
           >
             {[
@@ -142,15 +137,24 @@ export default function Header({ transparent = false }: HeaderProps) {
               <Link
                 key={link.path}
                 href={link.path}
-                className={`px-6 py-3 rounded-full text-sm font-medium transition-colors ${
-                  isActive(link.path)
-                    ? "bg-white text-black"
-                    : transparent
-                    ? "text-white hover:bg-white/20"
-                    : "text-white hover:bg-gray-700"
-                }`}
+                className="relative px-4 py-2 text-sm font-medium transition-colors group"
               >
-                {link.label}
+                {isActive(link.path) && (
+                  <motion.span
+                    layoutId="nav-underline"
+                    className="absolute bottom-1 left-0 right-0 h-0.5 bg-orange-500 dark:bg-sky-400"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+                <span className={`${
+                  isActive(link.path) 
+                    ? "text-orange-600 dark:text-sky-300 font-semibold" 
+                    : transparent 
+                      ? "text-white hover:text-sky-200" 
+                      : "text-gray-600 dark:text-gray-300 hover:text-orange-600 dark:hover:text-sky-400"
+                }`}>
+                  {link.label}
+                </span>
               </Link>
             ))}
           </nav>
@@ -162,16 +166,16 @@ export default function Header({ transparent = false }: HeaderProps) {
               <div className="relative">
                 <button
                   onClick={() => setNotificationOpen(prev => !prev)}
-                  className={`p-3 rounded-full border transition-all hover:bg-gray-200 dark:hover:bg-gray-700 ${
+                  className={`p-2.5 rounded-full border transition-all hover:bg-sky-50 dark:hover:bg-blue-900/50 ${
                     transparent
                       ? "border-white text-white hover:bg-white/10"
-                      : "border-gray-300 text-gray-700 dark:text-gray-200"
+                      : "border-orange-200 dark:border-blue-800 text-gray-600 dark:text-gray-300"
                   }`}
                   title="Notifications"
                 >
                   <Bell className="w-5 h-5" />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white text-xs font-bold">
+                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-white text-xs font-bold shadow-sm">
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   )}
@@ -193,21 +197,21 @@ export default function Header({ transparent = false }: HeaderProps) {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -10, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute top-14 right-0 w-96 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border dark:border-gray-700 z-50 overflow-hidden"
+                        className="absolute top-14 right-0 w-96 bg-white dark:bg-blue-950 rounded-xl shadow-2xl border border-sky-100 dark:border-blue-900 z-50 overflow-hidden ring-1 ring-black/5"
                       >
                         {/* Header */}
-                        <div className="flex justify-between items-center p-4 border-b dark:border-gray-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700">
+                        <div className="flex justify-between items-center p-4 border-b border-sky-100 dark:border-blue-900 bg-gradient-to-r from-sky-50 to-white dark:from-blue-900/50 dark:to-blue-950">
                           <div>
                             <h4 className="font-semibold text-gray-900 dark:text-white">Notifications</h4>
                             {unreadCount > 0 && (
-                              <p className="text-xs text-gray-600 dark:text-gray-400">
+                              <p className="text-xs text-sky-600 dark:text-sky-400">
                                 {unreadCount} unread
                               </p>
                             )}
                           </div>
                           <button 
                             onClick={() => setNotificationOpen(false)} 
-                            className="text-gray-500 hover:text-gray-800 dark:hover:text-white transition-colors"
+                            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
                           >
                             <X className="w-5 h-5" />
                           </button>
@@ -216,9 +220,9 @@ export default function Header({ transparent = false }: HeaderProps) {
                         {/* Notifications List */}
                         <div className="max-h-[32rem] overflow-y-auto">
                           {notifications.length > 0 ? (
-                            <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                            <div className="divide-y divide-sky-50 dark:divide-blue-900">
                               {notifications.map(notification => (
-                                <div key={notification.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                <div key={notification.id} className="hover:bg-sky-50/50 dark:hover:bg-blue-900/30 transition-colors">
                                   <NotificationCard
                                     notification={notification}
                                     onMarkAsRead={markAsRead}
@@ -230,8 +234,8 @@ export default function Header({ transparent = false }: HeaderProps) {
                             </div>
                           ) : (
                             <div className="p-8 text-center">
-                              <Bell className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                              <p className="text-sm text-gray-500 dark:text-gray-400">
+                              <Bell className="w-12 h-12 text-sky-200 dark:text-blue-800 mx-auto mb-2" />
+                              <p className="text-sm text-gray-500 dark:text-blue-300">
                                 No notifications yet
                               </p>
                             </div>
@@ -239,11 +243,11 @@ export default function Header({ transparent = false }: HeaderProps) {
                         </div>
 
                         {/* Footer */}
-                        <div className="p-3 bg-gray-50 dark:bg-gray-900/50 text-center border-t dark:border-gray-700">
+                        <div className="p-3 bg-gray-50 dark:bg-blue-950 text-center border-t border-sky-100 dark:border-blue-900">
                           <Link 
                             href="/notifications" 
                             onClick={() => setNotificationOpen(false)}
-                            className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline"
+                            className="text-sm font-medium text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 hover:underline"
                           >
                             View all notifications
                           </Link>
@@ -258,10 +262,10 @@ export default function Header({ transparent = false }: HeaderProps) {
             {/* Theme Toggle Button */}
             <button
               onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-              className={`p-3 rounded-full border transition-all hover:bg-gray-200 dark:hover:bg-gray-700 ${
+              className={`p-2.5 rounded-full border transition-all hover:bg-sky-50 dark:hover:bg-blue-900/50 ${
                 transparent
                   ? "border-white text-white hover:bg-white/10"
-                  : "border-gray-300 text-gray-700 dark:text-gray-200"
+                  : "border-orange-200 dark:border-blue-800 text-gray-600 dark:text-gray-300"
               }`}
               title="Toggle Theme"
             >
@@ -274,9 +278,9 @@ export default function Header({ transparent = false }: HeaderProps) {
                   transition={{ duration: 0.3 }}
                 >
                   {theme === "light" ? (
-                    <Moon className="w-5 h-5" />
+                    <Moon className="w-5 h-5 text-sky-600" />
                   ) : (
-                    <Sun className="w-5 h-5 text-yellow-400" />
+                    <Sun className="w-5 h-5 text-orange-400" />
                   )}
                 </motion.div>
               </AnimatePresence>
@@ -292,7 +296,7 @@ export default function Header({ transparent = false }: HeaderProps) {
                 {isAdmin && (
                   <Link
                     href="/admin"
-                    className="bg-red-600 text-white px-6 py-3 rounded-full text-sm font-medium hover:bg-red-700 transition-colors"
+                    className="bg-red-500 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-red-600 transition-all shadow-sm hover:shadow-md"
                   >
                     Admin
                   </Link>
@@ -300,31 +304,31 @@ export default function Header({ transparent = false }: HeaderProps) {
 
                 <Link
                   href="/profile"
-                  className={`flex items-center space-x-2 transition-colors px-4 py-2 border rounded-full text-sm font-medium ${
+                  className={`flex items-center space-x-2 transition-all px-4 py-2 border rounded-full text-sm font-medium hover:shadow-md ${
                     transparent
                       ? "border-white text-white hover:bg-white/10"
-                      : "border-gray-300 text-gray-700 dark:text-gray-200 hover:text-black"
+                      : "border-orange-200 dark:border-blue-800 text-gray-700 dark:text-gray-200 hover:border-orange-300 dark:hover:border-blue-700 bg-white/50 dark:bg-blue-900/20"
                   }`}
                 >
                   {userProfile?.avatar_url ? (
                     <img
                       src={userProfile.avatar_url}
                       alt="Profile"
-                      className="w-6 h-6 rounded-full object-cover"
+                      className="w-6 h-6 rounded-full object-cover ring-2 ring-sky-100 dark:ring-blue-800"
                     />
                   ) : (
                     <User className="w-5 h-5" />
                   )}
                   <span>{userProfile?.full_name || "Profile"}</span>
-                  <Settings className="w-4 h-4" />
+                  <Settings className="w-4 h-4 text-gray-400" />
                 </Link>
 
                 <button
                   onClick={handleSignOut}
-                  className={`transition-colors px-6 py-3 border rounded-full text-sm font-medium ${
+                  className={`transition-all px-5 py-2.5 border rounded-full text-sm font-medium hover:shadow-md ${
                     transparent
                       ? "border-white text-white hover:bg-white/10"
-                      : "border-gray-300 text-gray-700 dark:text-gray-200 hover:text-black"
+                      : "border-orange-200 dark:border-blue-800 text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-blue-900/50"
                   }`}
                 >
                   Sign Out
@@ -334,20 +338,20 @@ export default function Header({ transparent = false }: HeaderProps) {
               <>
                 <Link
                   href="/signin"
-                  className={`transition-colors px-6 py-3 border rounded-full text-sm font-medium ${
+                  className={`transition-all px-6 py-2.5 border rounded-full text-sm font-medium hover:shadow-md ${
                     transparent
                       ? "border-white text-white hover:bg-white/10"
-                      : "border-gray-300 text-gray-700 dark:text-gray-200 hover:text-black"
+                      : "border-orange-200 dark:border-blue-800 text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-blue-900/50"
                   }`}
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/signup"
-                  className={`px-6 py-3 rounded-full text-sm font-medium transition-colors ${
+                  className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 ${
                     transparent
                       ? "bg-white text-black hover:bg-gray-100"
-                      : "bg-black text-white dark:bg-gray-200 dark:text-black hover:bg-gray-800"
+                      : "bg-orange-500 text-white hover:bg-orange-600 dark:bg-sky-600 dark:hover:bg-sky-500"
                   }`}
                 >
                   Join Now

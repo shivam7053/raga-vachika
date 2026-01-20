@@ -2,190 +2,113 @@
 
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   Mail,
   Phone,
-  MapPin,
-  Facebook,
-  Twitter,
   Linkedin,
   Instagram,
 } from "lucide-react";
+import Chatbot from "@/chatbot/Chatbot";
 
 export default function Footer() {
-  const fadeInUp = {
-    initial: { opacity: 0, y: 30 },
-    animate: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 },
-    },
-  };
+  const pathname = usePathname();
+  const isActive = (path: string) => pathname === path;
 
   return (
-    <motion.footer
-      className="bg-black/60 backdrop-blur-md text-white py-16 dark:bg-gray-900 dark:text-gray-200"
-      initial="initial"
-      whileInView="animate"
-      viewport={{ once: true }}
-      variants={fadeInUp}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-4 gap-8">
-          {/* Company Info */}
-          <div>
-            <Link href="/" className="flex items-center rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 shadow-sm">
-              <img
-                src={
-                   "/white-logo.png" // 👈 Default logo
-                }
-                alt="GrowPro"
-                className="h-20 w-auto rounded-xl object-contain"
-              />
-            </Link>
+    <>
+      <footer className="relative bg-gradient-to-br from-sky-50/80 to-orange-50/50 dark:from-blue-950 dark:to-blue-900 border-t border-orange-100 dark:border-blue-900 py-6">
+        {/* Decorative top line */}
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-sky-400 via-orange-400 to-sky-400 opacity-50" />
 
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Single row layout */}
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            
+            {/* Brand and Copyright */}
+            <div className="flex items-center gap-6">
+              <Link href="/" className="transition-transform hover:scale-105">
+                <img
+                  src="/logo.png"
+                  alt="Ragavachika"
+                  className="h-10 w-auto object-contain"
+                />
+              </Link>
+              <p className="text-gray-500 dark:text-gray-400 text-sm hidden sm:block">
+                © {new Date().getFullYear()} <span className="font-semibold text-orange-600 dark:text-sky-400">Ragavachika</span>
+              </p>
+            </div>
 
-            <p className="text-gray-300 dark:text-gray-400 mb-4">
-              Empowering careers through expert guidance, global opportunities,
-              and industry connections.
-            </p>
+            {/* Quick Links */}
+            <div className="flex flex-wrap justify-center items-center gap-x-2 gap-y-2">
+              {[
+                 { label: "Home", href: "/" },
+                  { label: "Master Classes", href: "/masterclasses" },
+                  { label: "About Us", href: "/about" },
+                  { label: "Contact", href: "/contact" },
+                  { label: "Privacy Policy", href: "/privacy-policy" },
+                  { label: "Terms of Service", href: "/terms-of-service" },
+                  { label: "Cookie Policy", href: "/cookie-policy" },
+              ].map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="relative px-3 py-1 text-sm transition-colors group"
+                >
+                  {isActive(link.href) && (
+                    <motion.span
+                      layoutId="footer-underline"
+                      className="absolute bottom-[-2px] left-0 right-0 h-0.5 bg-orange-500 dark:bg-sky-400"
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                  <span className={`${
+                    isActive(link.href) 
+                      ? "text-orange-600 dark:text-sky-300 font-semibold" 
+                      : "text-gray-600 dark:text-gray-300 hover:text-orange-600 dark:hover:text-sky-400"
+                  }`}>
+                    {link.label}
+                  </span>
+                </Link>
+              ))}
+            </div>
 
-            <div className="flex space-x-4">
-              {/* <a
+            {/* Contact and Social */}
+            <div className="flex items-center gap-4">
+              <a href="mailto:Ragavachika@gmail.com" className="text-gray-600 dark:text-gray-400 hover:text-orange-500 transition-colors">
+                <Mail className="w-4 h-4" />
+              </a>
+              <a href="tel:+910010001000" className="text-gray-600 dark:text-gray-400 hover:text-orange-500 transition-colors">
+                <Phone className="w-4 h-4" />
+              </a>
+              <div className="w-px h-5 bg-gray-300 dark:bg-gray-600"></div>
+              <a
                 href="#"
-                className="text-gray-400 hover:text-white transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 dark:text-gray-400 hover:text-sky-600 transition-colors"
               >
-                <Facebook className="w-5 h-5" />
+                <Linkedin className="w-4 h-4" />
               </a>
               <a
                 href="#"
-                className="text-gray-400 hover:text-white transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 dark:text-gray-400 hover:text-orange-500 transition-colors"
               >
-                <Twitter className="w-5 h-5" />
-              </a> */}
-              <a
-                href="https://www.linkedin.com/company/growproworld/"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <Linkedin className="w-5 h-5" />
-              </a>
-              <a
-                href="https://www.instagram.com/growpro.world?igsh=MW5sNzNkcTBxcTZ3aQ=="
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <Instagram className="w-5 h-5" />
+                <Instagram className="w-4 h-4" />
               </a>
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/"
-                  className="text-gray-300 dark:text-gray-400 hover:text-white transition-colors"
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/masterclasses"
-                  className="text-gray-300 dark:text-gray-400 hover:text-white transition-colors"
-                >
-                  Master Classes
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/about"
-                  className="text-gray-300 dark:text-gray-400 hover:text-white transition-colors"
-                >
-                  About Us
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Services */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Services</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/connect-hr"
-                  className="text-gray-300 dark:text-gray-400 hover:text-white transition-colors"
-                >
-                  Master Class
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/global-opportunities"
-                  className="text-gray-300 dark:text-gray-400 hover:text-white transition-colors"
-                >
-                  Global Opportunity
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Contact Info */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <Mail className="w-5 h-5 text-gray-400" />
-                <span className="text-gray-300 dark:text-gray-400">
-                  India.growpro@gmail.com
-                </span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Phone className="w-5 h-5 text-gray-400" />
-                <span className="text-gray-300 dark:text-gray-400">
-                  +91 9625003045
-                </span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <MapPin className="w-5 h-5 text-gray-400" />
-                <span className="text-gray-300 dark:text-gray-400">
-                  New Delhi, India
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Section */}
-        <div className="border-t border-gray-700 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-400 text-sm">
-            © 2025 GrowPro. All rights reserved.
+          {/* Mobile copyright */}
+          <p className="text-gray-500 dark:text-gray-400 text-xs text-center mt-4 sm:hidden">
+            © {new Date().getFullYear()} Ragavachika. All rights reserved.
           </p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link
-              href="/privacy-policy"
-              className="text-gray-400 hover:text-white text-sm transition-colors"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              href="/terms-of-service"
-              className="text-gray-400 hover:text-white text-sm transition-colors"
-            >
-              Terms of Service
-            </Link>
-            <Link
-              href="/cookie-policy"
-              className="text-gray-400 hover:text-white text-sm transition-colors"
-            >
-              Cookie Policy
-            </Link>
-          </div>
         </div>
-      </div>
-    </motion.footer>
+      </footer>
+      <Chatbot />
+    </>
   );
 }

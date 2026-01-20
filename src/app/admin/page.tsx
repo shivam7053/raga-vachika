@@ -22,17 +22,6 @@ export default function AdminDashboard() {
           </p>
         </Link>
 
-        <Link
-          href="/admin/opportunity"
-          className="p-8 bg-white rounded-2xl shadow-md hover:shadow-xl text-center transition-all duration-300 border border-gray-200"
-        >
-          <h2 className="text-2xl font-semibold mb-3 text-gray-800">
-            💼 Global Opportunities
-          </h2>
-          <p className="text-gray-600">
-            View and add job/internship listings
-          </p>
-        </Link>
 
         <Link
           href="/admin/notifications"

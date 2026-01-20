@@ -12,6 +12,7 @@ import {
   Save,
   Receipt,
   ShoppingBag,
+  ClipboardCheck,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContexts";
 import toast from "react-hot-toast";
@@ -232,6 +233,15 @@ export default function ProfilePage() {
                     >
                       <Receipt className="w-4 h-4" />
                       View Transactions
+                    </Link>
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.05 }}>
+                    <Link
+                      href="/profile/test-results"
+                      className="flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors"
+                    >
+                      <ClipboardCheck className="w-4 h-4" />
+                      View Test Results
                     </Link>
                   </motion.div>
                 </div>

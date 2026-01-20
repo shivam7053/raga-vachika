@@ -21,6 +21,8 @@ import {
   AlertCircle,
   Video,
   List,
+  FileText,
+  ClipboardCheck,
 } from 'lucide-react';
 import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -47,6 +49,7 @@ export default function MasterclassDetailPage() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
+  const [activeTab, setActiveTab] = useState<'about' | 'notes' | 'tests'>('about');
 
   const masterclassId = params.id as string;
 
@@ -151,6 +154,8 @@ export default function MasterclassDetailPage() {
         ),
         purchased_by_users: data.purchased_by_users || [],
         demo_video_url: data.demo_video_url || "",
+        notes: data.notes || [],
+        tests: data.tests || [],
       };
 
       setMasterclass(mc);
@@ -173,6 +178,7 @@ export default function MasterclassDetailPage() {
 
   const userHasFullAccess = user?.uid && masterclass?.purchased_by_users?.includes(user.uid);
   const isMasterclassFree = masterclass?.type === 'free';
+  const hasAccess = userHasFullAccess || isMasterclassFree;
 
   // Refresh masterclass data after purchase
   const refreshMasterclassData = useCallback(async () => {
@@ -352,8 +358,6 @@ export default function MasterclassDetailPage() {
 
 
   const renderAllContent = () => {
-  const hasAccess = userHasFullAccess || isMasterclassFree;
-
   return (
     <div className="space-y-6">
       {masterclass.content.map((contentItem, index) => {
@@ -438,6 +442,23 @@ export default function MasterclassDetailPage() {
     </div>
   );
 };
+
+  const LockedContent = ({ title, message }: { title: string, message: string }) => (
+    <div className="text-center py-16 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+      <Lock className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+      <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{title}</h3>
+      <p className="text-gray-600 dark:text-gray-400 mt-1">{message}</p>
+      {!hasAccess && !isMasterclassFree && (
+        <button
+          onClick={handlePaidEnrollment}
+          className="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 mx-auto"
+        >
+          <ShoppingCart className="w-5 h-5" />
+          Enroll to Unlock
+        </button>
+      )}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
@@ -543,51 +564,121 @@ export default function MasterclassDetailPage() {
 
             {/* Details block */}
             {!showAllContent && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-6">
-                <h1 className="text-3xl font-bold mb-4">{masterclass.title}</h1>
-
-                <div className="grid md:grid-cols-2 gap-4 mb-6">
-                  <div className="flex items-center gap-2">
-                    <User className="w-5 h-5 text-gray-500" />
-                    <div>
-                      <p className="text-sm text-gray-500">Instructor</p>
-                      <p className="font-semibold">{masterclass.speaker_name}</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg mt-6 overflow-hidden">
+                <div className="p-6">
+                  <h1 className="text-3xl font-bold mb-4">{masterclass.title}</h1>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="flex items-center gap-2">
+                      <User className="w-5 h-5 text-gray-500" />
+                      <div>
+                        <p className="text-sm text-gray-500">Instructor</p>
+                        <p className="font-semibold">{masterclass.speaker_name}</p>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Briefcase className="w-5 h-5 text-gray-500" />
-                    <div>
-                      <p className="text-sm text-gray-500">Designation</p>
-                      <p className="font-semibold">{masterclass.speaker_designation}</p>
+                    <div className="flex items-center gap-2">
+                      <Briefcase className="w-5 h-5 text-gray-500" />
+                      <div>
+                        <p className="text-sm text-gray-500">Designation</p>
+                        <p className="font-semibold">{masterclass.speaker_designation}</p>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-gray-500" />
-                    <div>
-                      <p className="text-sm text-gray-500">Published</p>
-                      <p className="font-semibold">
-                        {formatMasterclassDate(masterclass.created_at)}
-                      </p>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-5 h-5 text-gray-500" />
+                      <div>
+                        <p className="text-sm text-gray-500">Published</p>
+                        <p className="font-semibold">{formatMasterclassDate(masterclass.created_at)}</p>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Users className="w-5 h-5 text-gray-500" />
-                    <div>
-                      <p className="text-sm text-gray-500">Total Enrollments</p>
-                      <p className="font-semibold">{masterclass.purchased_by_users?.length || 0}</p>
+                    <div className="flex items-center gap-2">
+                      <Users className="w-5 h-5 text-gray-500" />
+                      <div>
+                        <p className="text-sm text-gray-500">Total Enrollments</p>
+                        <p className="font-semibold">{masterclass.purchased_by_users?.length || 0}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {masterclass.description && (
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">About this Masterclass</h3>
-                    <p className="text-gray-600 dark:text-gray-400">{masterclass.description}</p>
-                  </div>
-                )}
+                {/* Tabs */}
+                <div className="border-b border-gray-200 dark:border-gray-700 px-6">
+                  <nav className="-mb-px flex space-x-6" aria-label="Tabs">
+                    <button
+                      onClick={() => setActiveTab('about')}
+                      className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                        activeTab === 'about'
+                          ? 'border-indigo-500 text-indigo-600'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:hover:text-gray-300'
+                      }`}
+                    >
+                      About
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('notes')}
+                      className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center gap-2 ${
+                        activeTab === 'notes'
+                          ? 'border-indigo-500 text-indigo-600'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:hover:text-gray-300'
+                      }`}
+                    >
+                      Notes {!hasAccess && <Lock className="w-4 h-4" />}
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('tests')}
+                      className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center gap-2 ${
+                        activeTab === 'tests'
+                          ? 'border-indigo-500 text-indigo-600'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:hover:text-gray-300'
+                      }`}
+                    >
+                      Tests {!hasAccess && <Lock className="w-4 h-4" />}
+                    </button>
+                  </nav>
+                </div>
+
+                {/* Tab Content */}
+                <div className="p-6">
+                  {activeTab === 'about' && (
+                    <div>
+                      <h3 className="font-semibold text-lg mb-2">About this Masterclass</h3>
+                      <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{masterclass.description}</p>
+                    </div>
+                  )}
+                  {activeTab === 'notes' && (
+                    hasAccess ? (
+                      masterclass.notes && masterclass.notes.length > 0 ? (
+                        <div className="space-y-3">
+                          {masterclass.notes.map(note => (
+                            <a href={note.url} target="_blank" rel="noopener noreferrer" key={note.id} className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                              <FileText className="w-5 h-5 text-indigo-500" />
+                              <span className="font-medium text-gray-800 dark:text-gray-200">{note.title}</span>
+                            </a>
+                          ))}
+                        </div>
+                      ) : <p className="text-gray-500 text-center py-8">No notes available for this masterclass yet.</p>
+                    ) : (
+                      <LockedContent title="Notes are Locked" message="Enroll in this masterclass to access all the notes." />
+                    )
+                  )}
+                  {activeTab === 'tests' && (
+                    hasAccess ? (
+                      masterclass.tests && masterclass.tests.length > 0 ? (
+                        <div className="space-y-3">
+                          {masterclass.tests.map(test => (
+                            <Link href={`/testportal/${test.id}?masterclassId=${masterclassId}`} key={test.id} className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                              <ClipboardCheck className="w-5 h-5 text-green-500" />
+                              <div>
+                                <p className="font-medium text-gray-800 dark:text-gray-200">{test.title}</p>
+                                {test.description && <p className="text-sm text-gray-500 dark:text-gray-400">{test.description}</p>}
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      ) : <p className="text-gray-500 text-center py-8">No tests available for this masterclass yet.</p>
+                    ) : (
+                      <LockedContent title="Tests are Locked" message="Enroll in this masterclass to take tests and track your progress." />
+                    )
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -612,7 +703,6 @@ export default function MasterclassDetailPage() {
 
               <div className="space-y-2 max-h-[600px] overflow-y-auto">
                 {masterclass.content.map((contentItem, index) => {
-                  const hasAccess = userHasFullAccess || isMasterclassFree;
                   // ✅ FIXED: Check if THIS specific item is selected
                   const isSelected = !showAllContent && selectedContent?.id === contentItem.id;
 

@@ -10,17 +10,17 @@ const team = [
 
 const features = [
   {
-    icon: <BookOpen className="w-8 h-8 text-blue-500" />,
+    icon: <BookOpen className="w-8 h-8 text-sky-600 dark:text-sky-400" />,
     title: "Expert-Led Courses",
     desc: "Learn directly from top mentors with real-world experience and insights.",
   },
   {
-    icon: <Rocket className="w-8 h-8 text-blue-500" />,
+    icon: <Rocket className="w-8 h-8 text-orange-500" />,
     title: "Hands-On Learning",
     desc: "Our courses are project-based — you learn by doing, not just watching.",
   },
   {
-    icon: <Award className="w-8 h-8 text-blue-500" />,
+    icon: <Award className="w-8 h-8 text-sky-600 dark:text-sky-400" />,
     title: "Career Growth",
     desc: "Get certified, build your portfolio, and stand out to top recruiters.",
   },
@@ -28,16 +28,22 @@ const features = [
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100">
+    <main className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-orange-50 dark:from-blue-950 dark:via-gray-900 dark:to-black relative overflow-hidden text-gray-900 dark:text-gray-100">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-5%] w-96 h-96 bg-sky-200/30 dark:bg-blue-900/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-[-10%] right-[-5%] w-96 h-96 bg-orange-200/30 dark:bg-orange-900/20 rounded-full blur-3xl" />
+      </div>
+
       {/* 🎬 Hero Section */}
-      <section className="relative flex flex-col justify-center items-center text-center py-24 px-6">
+      <section className="relative flex flex-col justify-center items-center text-center py-24 px-6 z-10">
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
           className="text-4xl md:text-6xl font-bold mb-4"
         >
-          About <span className="text-blue-500">GrowPro</span>
+          About <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-orange-600 dark:from-sky-400 dark:to-orange-400">Ragavachika</span>
         </motion.h1>
         <motion.p
           initial={{ opacity: 0 }}
@@ -51,17 +57,17 @@ export default function AboutPage() {
       </section>
 
       {/* 🧭 Mission & Vision Section */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-900 px-6">
+      <section className="py-20 px-6 relative z-10">
         <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-12">Our Mission & Vision</h2>
+          <h2 className="text-3xl font-bold mb-12 text-gray-900 dark:text-white">Our Mission & Vision</h2>
           <div className="grid md:grid-cols-2 gap-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="p-8 rounded-2xl shadow-lg bg-white dark:bg-gray-800"
+              className="p-8 rounded-3xl shadow-xl bg-white/80 dark:bg-blue-900/20 backdrop-blur-md border border-sky-100 dark:border-blue-800"
             >
-              <Target className="w-12 h-12 text-blue-500 mb-4 mx-auto" />
+              <Target className="w-12 h-12 text-orange-500 mb-4 mx-auto" />
               <h3 className="text-2xl font-semibold mb-2">Our Mission</h3>
               <p className="text-gray-600 dark:text-gray-300">
                 To make world-class learning accessible, affordable, and outcome-driven
@@ -73,9 +79,9 @@ export default function AboutPage() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="p-8 rounded-2xl shadow-lg bg-white dark:bg-gray-800"
+              className="p-8 rounded-3xl shadow-xl bg-white/80 dark:bg-blue-900/20 backdrop-blur-md border border-sky-100 dark:border-blue-800"
             >
-              <Users className="w-12 h-12 text-blue-500 mb-4 mx-auto" />
+              <Users className="w-12 h-12 text-sky-600 dark:text-sky-400 mb-4 mx-auto" />
               <h3 className="text-2xl font-semibold mb-2">Our Vision</h3>
               <p className="text-gray-600 dark:text-gray-300">
                 To create the next generation of global professionals by bridging
@@ -128,9 +134,9 @@ export default function AboutPage() {
 
 
       {/* 🚀 Why Choose Us */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-900 px-6">
+      <section className="py-20 px-6 relative z-10">
         <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-12">Why Choose GrowPro?</h2>
+          <h2 className="text-3xl font-bold mb-12 text-gray-900 dark:text-white">Why Choose Ragavachika?</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {features.map((f, i) => (
               <motion.div
@@ -138,7 +144,7 @@ export default function AboutPage() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.2 }}
-                className="p-8 rounded-2xl shadow-lg bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all"
+                className="p-8 rounded-3xl shadow-lg bg-white/80 dark:bg-blue-900/20 backdrop-blur-md border border-sky-100 dark:border-blue-800 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="flex justify-center mb-4">{f.icon}</div>
                 <h3 className="text-xl font-semibold mb-2">{f.title}</h3>
