@@ -163,6 +163,7 @@ export default function PaymentModal({
               amount: purchaseAmount,
               method: "dummy",
               type: transactionType,
+              userEmail: user.email,
             }),
           }
         );
@@ -241,6 +242,7 @@ export default function PaymentModal({
                     amount: purchaseAmount,
                     method: "razorpay",
                     type: transactionType,
+                    userEmail: user.email,
                   }),
                 }
               );

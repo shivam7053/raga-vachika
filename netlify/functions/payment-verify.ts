@@ -207,18 +207,20 @@ async function sendImmediateReminder(
  * Main serverless handler
  */
 export const handler: Handler = async (event, context) => {
-  console.log("🔵 Payment verification function invoked");
+  console.log("🔵 [PAYMENT-VERIFY] Function invoked");
   
   try {
     if (event.httpMethod !== "POST") {
+      console.warn("⚠️ [PAYMENT-VERIFY] Invalid method:", event.httpMethod);
       return { statusCode: 405, body: JSON.stringify({ error: "Method not allowed" }) };
     }
 
     let body: any;
     try {
       body = JSON.parse(event.body || "{}");
+      console.log("✅ [PAYMENT-VERIFY] JSON parsed successfully. Keys:", Object.keys(body));
     } catch (parseError) {
-      console.error("[400] Invalid JSON:", event.body);
+      console.error("❌ [PAYMENT-VERIFY] Invalid JSON:", event.body);
       return { statusCode: 400, body: JSON.stringify({ success: false, error: "Invalid JSON" }) };
     }
 
@@ -232,10 +234,13 @@ export const handler: Handler = async (event, context) => {
       amount = 0,
       method = "razorpay",
       type = "purchase",
+      userEmail: providedEmail,
     } = body;
 
+    console.log(`🔍 [PAYMENT-VERIFY] Details: User=${userId}, Masterclass=${masterclassId}, Order=${razorpay_order_id}, Amount=${amount}`);
+
     if (!userId) {
-      console.error("[400] Missing userId");
+      console.error("❌ [PAYMENT-VERIFY] Missing userId");
       return { statusCode: 400, body: JSON.stringify({ success: false, error: "Missing userId" }) };
     }
 
@@ -250,15 +255,20 @@ export const handler: Handler = async (event, context) => {
        DUMMY PAYMENT HANDLING
        ------------------------- */
     if (typeof razorpay_order_id === "string" && razorpay_order_id.startsWith("dummy_")) {
-      console.log("[DUMMY] Processing dummy payment");
+      console.log("[DUMMY] 🟢 Processing dummy payment flow");
 
+      console.log("[DUMMY] Fetching user profile...");
       const userSnap = await userRef.get();
       const userData = userSnap.exists ? userSnap.data() : null;
-      const userEmail = userData?.email;
+      const userEmail = providedEmail || userData?.email;
       const userName = userData?.name || userData?.displayName || "";
 
+      console.log(`[DUMMY] User found: ${userSnap.exists}, Email: ${userEmail || "MISSING"}`);
+
       // Record transaction
+      console.log("[DUMMY] Executing Firestore transaction...");
       await adminDb.runTransaction(async (tx) => {
+        console.log("[DUMMY] Transaction: Reading user doc...");
         const docSnap = await tx.get(userRef);
         const timestamp = new Date().toISOString();
 
@@ -300,22 +310,28 @@ export const handler: Handler = async (event, context) => {
             created_at: timestamp,
           });
         }
+        console.log("[DUMMY] Transaction: User record updated.");
       });
+      console.log("[DUMMY] Firestore transaction committed.");
 
       // Grant access
       if (masterclassId && masterRef) {
+        console.log("[DUMMY] Granting access to masterclass...");
         const mcSnap = await masterRef.get();
         if (mcSnap.exists) {
           await masterRef.update({
             purchased_by_users: admin.firestore.FieldValue.arrayUnion(userId),
           });
+          console.log("[DUMMY] Access granted.");
+        } else {
+          console.warn("[DUMMY] Masterclass doc not found during access grant.");
         }
       }
 
       // ✅ Generate PDF as base64
       let pdfBase64: string | null = null;
       if (userEmail) {
-        console.log("[PDF] Generating receipt for dummy payment...");
+        console.log("[DUMMY] 📄 Generating receipt PDF...");
         try {
           pdfBase64 = await generatePdfReceiptBase64(
             razorpay_order_id,
@@ -328,7 +344,7 @@ export const handler: Handler = async (event, context) => {
           );
           
           if (pdfBase64) {
-            console.log("[PDF] ✅ PDF generated successfully");
+            console.log("[DUMMY] ✅ PDF generated successfully. Sending email...");
             
             // ✅ Email the PDF as attachment
             await emailPdfReceipt(
@@ -340,14 +356,18 @@ export const handler: Handler = async (event, context) => {
               amount,
               pdfBase64
             );
+            console.log("[DUMMY] ✉️ Receipt email sent.");
           }
         } catch (pdfError) {
-          console.error("[PDF] ❌ PDF generation failed:", pdfError);
+          console.error("[DUMMY] ❌ PDF generation/email failed:", pdfError);
         }
+      } else {
+        console.warn("[DUMMY] ⚠️ Skipping email/PDF because userEmail is missing");
       }
 
       // Send emails
       if (userEmail) {
+        console.log("[DUMMY] 📧 Triggering confirmation email...");
         let mcData = null;
         if (masterclassId && masterRef) {
           const doc = await masterRef.get();
@@ -355,14 +375,17 @@ export const handler: Handler = async (event, context) => {
         }
 
         await triggerPurchaseConfirmationEmail(userEmail, userName, mcData, userId);
+        console.log("[DUMMY] 📧 Confirmation email triggered.");
 
         // Send immediate reminders
+        console.log("[DUMMY] ⏰ Checking for immediate reminders...");
         const typedMcData = mcData as Masterclass;
         if (typedMcData?.content) {
           for (const contentItem of typedMcData.content) {
             if (contentItem.source === 'zoom' && contentItem.scheduled_date) {
               const scheduledTime = new Date(contentItem.scheduled_date).getTime();
               if (scheduledTime > now.getTime() && scheduledTime < twelveHoursFromNow) {
+                console.log(`[DUMMY] 🔔 Sending immediate reminder for ${contentItem.title}`);
                 await sendImmediateReminder(userEmail, userName, typedMcData, contentItem);
               }
             }
@@ -370,7 +393,7 @@ export const handler: Handler = async (event, context) => {
         }
       }
 
-      console.log("[DUMMY] ✅ Payment completed");
+      console.log("[DUMMY] ✅ Payment flow completed successfully");
       return {
         statusCode: 200,
         body: JSON.stringify({ 
@@ -386,12 +409,14 @@ export const handler: Handler = async (event, context) => {
     /* -------------------------
        RAZORPAY PAYMENT HANDLING
        ------------------------- */
-    console.log("[RAZORPAY] Processing real payment");
+    console.log("[RAZORPAY] 🟢 Processing real payment flow");
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      console.error("[RAZORPAY] ❌ Missing payment details");
       return { statusCode: 400, body: JSON.stringify({ success: false, error: "Missing payment details" }) };
     }
     if (!masterclassId) {
+      console.error("[RAZORPAY] ❌ Missing masterclassId");
       return { statusCode: 400, body: JSON.stringify({ success: false, error: "Missing masterclassId" }) };
     }
 
@@ -403,8 +428,9 @@ export const handler: Handler = async (event, context) => {
       .update(signaturePayload)
       .digest("hex");
 
+    console.log("[RAZORPAY] Verifying signature...");
     if (generatedSignature !== razorpay_signature) {
-      console.error("[AUTH] ❌ Invalid signature");
+      console.error("[RAZORPAY] ❌ Invalid signature");
 
       // Record failed transaction
       await adminDb.runTransaction(async (tx) => {
@@ -443,30 +469,37 @@ export const handler: Handler = async (event, context) => {
       };
     }
 
-    console.log("[AUTH] ✅ Signature verified");
+    console.log("[RAZORPAY] ✅ Signature verified");
 
     // Fetch user and masterclass
+    console.log("[RAZORPAY] Fetching User and Masterclass data...");
     const userSnap = await userRef.get();
     if (!userSnap.exists) {
+      console.error("[RAZORPAY] ❌ User not found");
       return { statusCode: 404, body: JSON.stringify({ success: false, error: "User not found" }) };
     }
 
     const userData = userSnap.data();
-    const userEmail = userData?.email;
+    const userEmail = providedEmail || userData?.email;
     const userName = userData?.name || userData?.displayName || "";
 
+    console.log(`[RAZORPAY] User: ${userId}, Email: ${userEmail || "MISSING"}`);
+
     if (!masterRef) {
+      console.error("[RAZORPAY] ❌ Missing masterclassRef");
       return { statusCode: 400, body: JSON.stringify({ success: false, error: "Missing masterclassRef" }) };
     }
 
     const mcSnap = await masterRef.get();
     if (!mcSnap.exists) {
+      console.error("[RAZORPAY] ❌ Masterclass not found");
       return { statusCode: 404, body: JSON.stringify({ success: false, error: "Masterclass not found" }) };
     }
 
     const mcData = mcSnap.data();
 
     // Grant access & record transaction
+    console.log("[RAZORPAY] Executing Firestore transaction (Record + Grant Access)...");
     await adminDb.runTransaction(async (tx) => {
       const timestamp = new Date().toISOString();
       
@@ -501,11 +534,12 @@ export const handler: Handler = async (event, context) => {
         purchased_by_users: admin.firestore.FieldValue.arrayUnion(userId),
       });
     });
+    console.log("[RAZORPAY] Firestore transaction committed.");
 
     // ✅ Generate PDF as base64
     let pdfBase64: string | null = null;
     if (userEmail) {
-      console.log("[PDF] Generating receipt for Razorpay payment...");
+      console.log("[RAZORPAY] 📄 Generating receipt PDF...");
       try {
         pdfBase64 = await generatePdfReceiptBase64(
           razorpay_order_id,
@@ -518,7 +552,7 @@ export const handler: Handler = async (event, context) => {
         );
         
         if (pdfBase64) {
-          console.log("[PDF] ✅ PDF generated successfully");
+          console.log("[RAZORPAY] ✅ PDF generated successfully. Sending email...");
           
           // ✅ Email the PDF as attachment
           await emailPdfReceipt(
@@ -530,26 +564,33 @@ export const handler: Handler = async (event, context) => {
             amount,
             pdfBase64
           );
+          console.log("[RAZORPAY] ✉️ Receipt email sent.");
         }
       } catch (pdfError) {
-        console.error("[PDF] ❌ PDF generation failed:", pdfError);
+        console.error("[RAZORPAY] ❌ PDF generation/email failed:", pdfError);
       }
+    } else {
+      console.warn("[RAZORPAY] ⚠️ Skipping email/PDF because userEmail is missing");
     }
 
     // Send emails
     if (userEmail) {
+      console.log("[RAZORPAY] 📧 Triggering confirmation email...");
       const doc = await masterRef.get();
       const mcDataWithId = doc.exists ? { id: doc.id, ...doc.data() } : mcData;
 
       await triggerPurchaseConfirmationEmail(userEmail, userName, mcDataWithId, userId);
+      console.log("[RAZORPAY] 📧 Confirmation email triggered.");
 
       // Send immediate reminders
+      console.log("[RAZORPAY] ⏰ Checking for immediate reminders...");
       const typedMcDataWithId = mcDataWithId as Masterclass;
       if (typedMcDataWithId?.content) {
         for (const contentItem of typedMcDataWithId.content) {
           if (contentItem.source === 'zoom' && contentItem.scheduled_date) {
             const scheduledTime = new Date(contentItem.scheduled_date).getTime();
             if (scheduledTime > now.getTime() && scheduledTime < twelveHoursFromNow) {
+              console.log(`[RAZORPAY] 🔔 Sending immediate reminder for ${contentItem.title}`);
               await sendImmediateReminder(userEmail, userName, typedMcDataWithId, contentItem);
             }
           }
@@ -557,7 +598,7 @@ export const handler: Handler = async (event, context) => {
       }
     }
 
-    console.log("[RAZORPAY] ✅ Payment completed");
+    console.log("[RAZORPAY] ✅ Payment flow completed successfully");
     return {
       statusCode: 200,
       body: JSON.stringify({ 
@@ -570,7 +611,7 @@ export const handler: Handler = async (event, context) => {
     };
     
   } catch (err: any) {
-    console.error("❌ FATAL Error:", err);
+    console.error("❌ [PAYMENT-VERIFY] FATAL Error:", err);
     return { 
       statusCode: 500, 
       body: JSON.stringify({ success: false, error: err?.message || String(err) }) 

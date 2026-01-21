@@ -114,8 +114,8 @@ export default function MasterclassesPage() {
   };
 
   const SkeletonCard = () => (
-    <div className="animate-pulse bg-white dark:bg-gray-800 shadow rounded-xl p-6 space-y-4 border border-gray-300 dark:border-gray-700">
-      <div className="h-40 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+    <div className="animate-pulse bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm shadow-lg rounded-3xl p-6 space-y-4 border border-white/20 dark:border-gray-700">
+      <div className="h-40 bg-gray-200 dark:bg-gray-700 rounded-2xl" />
       <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded w-3/4" />
       <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/2" />
       <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/3" />
@@ -129,14 +129,14 @@ export default function MasterclassesPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-100 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-orange-50 dark:from-gray-900 dark:via-blue-950 dark:to-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
       <section className="pt-24 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white font-medium transition mb-6"
+              className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-sky-400 font-medium transition mb-6"
             >
               <ArrowLeft className="w-5 h-5" />
               Back to Home
@@ -144,7 +144,7 @@ export default function MasterclassesPage() {
 
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
-                <h1 className="text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white mb-2">
+                <h1 className="text-4xl lg:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-orange-600 dark:from-sky-400 dark:to-orange-400 mb-2">
                   All Masterclasses
                 </h1>
                 <p className="text-lg text-gray-700 dark:text-gray-400">
@@ -154,7 +154,7 @@ export default function MasterclassesPage() {
               <button
                 onClick={handleRefresh}
                 disabled={loading}
-                className="flex items-center gap-2 px-5 py-3 bg-black dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-200 text-white dark:text-black rounded-lg font-semibold transition disabled:opacity-50"
+                className="flex items-center gap-2 px-5 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-orange-300 dark:hover:border-blue-700 text-gray-700 dark:text-gray-200 rounded-xl font-semibold transition disabled:opacity-50 shadow-sm hover:shadow-md"
               >
                 <RefreshCw className={`w-5 h-5 ${loading ? "animate-spin" : ""}`} />
                 Refresh
@@ -172,10 +172,10 @@ export default function MasterclassesPage() {
                   placeholder="Search by title, speaker, or designation..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-10 py-3 border border-gray-400 dark:border-gray-700 rounded-lg 
-                             text-gray-900 dark:text-gray-100 placeholder-gray-700 dark:placeholder-gray-400 
-                             bg-white dark:bg-gray-800 focus:ring-2 focus:ring-black dark:focus:ring-gray-300 
-                             focus:border-transparent shadow-sm transition"
+                  className="w-full pl-12 pr-10 py-3 border border-gray-200 dark:border-gray-700 rounded-xl 
+                             text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 
+                             bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm focus:ring-2 focus:ring-sky-500 dark:focus:ring-sky-400 
+                             focus:border-transparent shadow-sm transition outline-none"
                 />
                 {searchQuery && (
                   <button
@@ -192,10 +192,10 @@ export default function MasterclassesPage() {
                   <button
                     key={type}
                     onClick={() => setFilterType(type)}
-                    className={`px-6 py-3 rounded-lg font-semibold transition ${
+                    className={`px-6 py-2.5 rounded-full font-semibold transition-all ${
                       filterType === type
-                        ? "bg-black dark:bg-white text-white dark:text-black shadow-md"
-                        : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-400 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700"
+                        ? "bg-gradient-to-r from-sky-500 to-orange-500 text-white shadow-lg shadow-orange-500/20"
+                        : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                     }`}
                   >
                     {label}
@@ -204,10 +204,10 @@ export default function MasterclassesPage() {
                 {user && (
                   <button
                     onClick={() => setFilterType("enrolled")}
-                    className={`px-6 py-3 rounded-lg font-semibold transition ${
+                    className={`px-6 py-2.5 rounded-full font-semibold transition-all ${
                       filterType === "enrolled"
-                        ? "bg-black dark:bg-white text-white dark:text-black shadow-md"
-                        : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-400 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700"
+                        ? "bg-gradient-to-r from-sky-500 to-orange-500 text-white shadow-lg shadow-orange-500/20"
+                        : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                     }`}
                   >
                     My Courses
@@ -244,7 +244,7 @@ export default function MasterclassesPage() {
                   setSearchQuery("");
                   setFilterType("all");
                 }}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 font-semibold transition"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-sky-500 to-orange-500 text-white rounded-xl hover:shadow-lg hover:-translate-y-0.5 font-semibold transition"
               >
                 Clear Filters
               </button>
@@ -271,7 +271,7 @@ export default function MasterclassesPage() {
                   <button
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 disabled:opacity-50 hover:bg-gray-300 dark:hover:bg-gray-700 transition"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition shadow-sm"
                   >
                     <ChevronLeft className="w-5 h-5" /> Prev
                   </button>
@@ -283,7 +283,7 @@ export default function MasterclassesPage() {
                   <button
                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 disabled:opacity-50 hover:bg-gray-300 dark:hover:bg-gray-700 transition"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition shadow-sm"
                   >
                     Next <ChevronRight className="w-5 h-5" />
                   </button>
