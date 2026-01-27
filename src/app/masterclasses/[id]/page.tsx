@@ -21,8 +21,6 @@ import {
   AlertCircle,
   Video,
   List,
-  FileText,
-  ClipboardCheck,
 } from 'lucide-react';
 import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -35,8 +33,10 @@ import {
 } from '@/types/masterclass';
 import { formatMasterclassDate, getYouTubeVideoId } from "@/utils/masterclass";
 import { addTransactionRecord } from "@/utils/userUtils";
-import ZoomPanel from "@/components/ZoomPanel";
 import PaymentModal from "@/components/PaymentModal";
+import { MasterclassPlayer } from "@/components/masterclass/MasterclassPlayer";
+import { MasterclassNotes } from "@/components/masterclass/MasterclassNotes";
+import { MasterclassTests } from "@/components/masterclass/MasterclassTests";
 
 export default function MasterclassDetailPage() {
   const params = useParams();
@@ -52,61 +52,6 @@ export default function MasterclassDetailPage() {
   const [activeTab, setActiveTab] = useState<'about' | 'notes' | 'tests'>('about');
 
   const masterclassId = params.id as string;
-
-  // Fetch masterclass details
-  // useEffect(() => {
-  //   const fetchMasterclass = async () => {
-  //     if (!masterclassId) return;
-
-  //     try {
-  //       setLoading(true);
-  //       const docRef = doc(db, "MasterClasses", masterclassId);
-  //       const docSnap = await getDoc(docRef);
-
-  //       if (!docSnap.exists()) {
-  //         setError("Masterclass not found.");
-  //         return;
-  //       }
-
-  //       const data = docSnap.data();
-
-  //       const mc: Masterclass = {
-  //         id: docSnap.id,
-  //         title: data.title || "",
-  //         speaker_name: data.speaker_name || "",
-  //         speaker_designation: data.speaker_designation || "",
-  //         thumbnail_url: data.thumbnail_url || "",
-  //         description: data.description || "",
-  //         price: data.price || 0,
-  //         type: data.type || 'free',
-  //         created_at: data.created_at
-  //           ? new Date(data.created_at.seconds * 1000).toISOString()
-  //           : new Date().toISOString(),
-  //         content: (data.content || []).sort((a: MasterclassContent, b: MasterclassContent) => a.order - b.order),
-  //         purchased_by_users: data.purchased_by_users || [],
-  //         demo_video_url: data.demo_video_url || '',
-  //       };
-
-  //       setMasterclass(mc);
-
-  //       // Auto-select the first piece of content
-  //       if (mc.content.length > 0) {
-  //         setSelectedContent(mc.content[0]);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching masterclass:", error);
-  //       setError("Failed to load masterclass details.");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   toast.loading("Loading masterclass details...", { id: "loading-toast" });
-  //   fetchMasterclass();
-  //   toast.dismiss("loading-toast");
-  // }, [masterclassId]);
-
-
 
   useEffect(() => {
   const fetchMasterclass = async () => {
@@ -287,179 +232,6 @@ export default function MasterclassDetailPage() {
   const isUpcomingContent = (content: MasterclassContent) =>
     content.source === 'zoom' && content.scheduled_date && new Date(content.scheduled_date) > new Date();
 
-  const videoId = selectedContent?.source === "youtube" && selectedContent.youtube_url ? getYouTubeVideoId(selectedContent.youtube_url) : null;
-
-  // ✅ NEW: Render content in "All Content" view
-  // const renderAllContent = () => {
-  //   const hasAccess = userHasFullAccess || isMasterclassFree;
-
-  //   return (
-  //     <div className="space-y-6">
-  //       {masterclass.content.map((contentItem, index) => {
-  //         const contentVideoId = contentItem.source === "youtube" && contentItem.youtube_url 
-  //           ? getYouTubeVideoId(contentItem.youtube_url) 
-  //           : null;
-
-  //         return (
-  //           <div key={contentItem.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-  //             {/* Video Player or Locked State */}
-  //             {contentItem.source === "youtube" && (
-  //               <div className="relative aspect-video bg-gray-900">
-  //                 {hasAccess && contentVideoId ? (
-  //                   <iframe
-  //                     src={`https://www.youtube.com/embed/${contentVideoId}`}
-  //                     title={contentItem.title}
-  //                     className="w-full h-full"
-  //                     allowFullScreen
-  //                   />
-  //                 ) : (
-  //                   <div className="flex flex-col items-center justify-center h-full">
-  //                     <Lock className="w-16 h-16 text-gray-500 mb-4" />
-  //                     <p className="text-gray-400 text-lg">
-  //                       {isMasterclassFree ? "Loading..." : "Purchase to unlock"}
-  //                     </p>
-  //                   </div>
-  //                 )}
-  //               </div>
-  //             )}
-
-  //             {contentItem.source === "zoom" && (
-  //               <ZoomPanel
-  //                 content={contentItem}
-  //                 hasAccess={hasAccess}
-  //                 processing={processing}
-  //               />
-  //             )}
-
-  //             {/* Content Details */}
-  //             <div className="p-6">
-  //               <h3 className="text-xl font-bold mb-2">
-  //                 {index + 1}. {contentItem.title}
-  //               </h3>
-  //               {contentItem.description && (
-  //                 <p className="text-gray-600 dark:text-gray-400 mb-4">{contentItem.description}</p>
-  //               )}
-
-  //               <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-  //                 {contentItem.duration && (
-  //                   <div className="flex items-center gap-1">
-  //                     <Clock className="w-4 h-4" />
-  //                     {contentItem.duration}
-  //                   </div>
-  //                 )}
-  //               </div>
-  //             </div>
-  //           </div>
-  //         );
-  //       })}
-  //     </div>
-  //   );
-  // };
-
-
-  const renderAllContent = () => {
-  return (
-    <div className="space-y-6">
-      {masterclass.content.map((contentItem, index) => {
-        const isActive = selectedContent?.id === contentItem.id;
-
-        const contentVideoId =
-          contentItem.source === "youtube" && contentItem.youtube_url
-            ? getYouTubeVideoId(contentItem.youtube_url)
-            : null;
-
-        return (
-          <div
-            key={contentItem.id}
-            onClick={() => setSelectedContent(contentItem)}
-            className={`rounded-xl shadow-lg overflow-hidden cursor-pointer transition-all 
-            ${isActive ? "ring-2 ring-indigo-500 bg-white dark:bg-gray-700" : "bg-white dark:bg-gray-800"}`}
-          >
-            {/* Video / Zoom */}
-            {contentItem.source === "youtube" && (
-              <div className="relative aspect-video bg-gray-900">
-                {hasAccess && contentVideoId ? (
-                  <iframe
-                    src={`https://www.youtube.com/embed/${contentVideoId}`}
-                    title={contentItem.title}
-                    className="w-full h-full"
-                    allowFullScreen
-                  />
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-full">
-                    <Lock className="w-16 h-16 text-gray-500 mb-4" />
-                    <p className="text-gray-400 text-lg">
-                      {isMasterclassFree ? "Loading..." : "Purchase to unlock"}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {contentItem.source === "zoom" && (
-              <ZoomPanel
-                content={contentItem}
-                hasAccess={hasAccess}
-                processing={processing}
-              />
-            )}
-
-            {/* Content Info */}
-            <div className={`p-6 ${isActive ? "bg-indigo-50 dark:bg-indigo-900" : ""}`}>
-              <h3 className="text-xl font-bold mb-2">
-                {index + 1}. {contentItem.title}
-              </h3>
-
-              {contentItem.description && (
-                <p className="text-gray-600 dark:text-gray-300 mb-4">
-                  {contentItem.description}
-                </p>
-              )}
-              <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-300">
-                {contentItem.duration && (
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
-                    {contentItem.duration}
-                  </div>
-                )}
-                {contentItem.source === 'youtube' &&
-                  (contentItem as YoutubeContent).scheduled_date && (
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>
-                        {formatMasterclassDate(
-                          (contentItem as YoutubeContent).scheduled_date!
-                        )}{' '}
-                        {(contentItem as YoutubeContent).scheduled_time}
-                      </span>
-                    </div>
-                  )}
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
-  const LockedContent = ({ title, message }: { title: string, message: string }) => (
-    <div className="text-center py-16 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-      <Lock className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-      <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{title}</h3>
-      <p className="text-gray-600 dark:text-gray-400 mt-1">{message}</p>
-      {!hasAccess && !isMasterclassFree && (
-        <button
-          onClick={handlePaidEnrollment}
-          className="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 mx-auto"
-        >
-          <ShoppingCart className="w-5 h-5" />
-          Enroll to Unlock
-        </button>
-      )}
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -473,73 +245,16 @@ export default function MasterclassDetailPage() {
 
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            {/* ✅ IMPROVED: Conditional rendering based on view mode */}
-            {!showAllContent ? (
-              <>
-                {/* Single Content Player */}
-                {selectedContent?.source === "zoom" && (
-                  <ZoomPanel
-                    content={selectedContent}
-                    hasAccess={!!(userHasFullAccess || isMasterclassFree)}
-                    processing={processing}
-                  />
-                )}
-                {selectedContent?.source === "youtube" && (
-                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-                    <div className="relative aspect-video bg-gray-900">
-                      {(userHasFullAccess || isMasterclassFree) && videoId ? (
-                        <iframe
-                          src={`https://www.youtube.com/embed/${videoId}`}
-                          title={selectedContent.title}
-                          className="w-full h-full"
-                          allowFullScreen
-                        />
-                      ) : (
-                        <div className="flex flex-col items-center justify-center h-full">
-                          <Lock className="w-16 h-16 text-gray-500 mb-4" />
-                          <p className="text-gray-400 text-lg">
-                            {isMasterclassFree ? "Select a video" : "Purchase to unlock"}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-
-                    {selectedContent && (
-                      <div className="p-6">
-                        <h2 className="text-2xl font-bold mb-2">{selectedContent.title}</h2>
-                        {selectedContent.description && (
-                          <p className="text-gray-600 dark:text-gray-400 mb-4">{selectedContent.description}</p>
-                        )}
-
-                        <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-                          {selectedContent.duration && (
-                            <div className="flex items-center gap-1">
-                              <Clock className="w-4 h-4" />
-                              {selectedContent.duration}
-                            </div>
-                          )}
-                          {selectedContent.source === 'youtube' &&
-                            (selectedContent as YoutubeContent).scheduled_date && (
-                              <div className="flex items-center gap-1">
-                                <Calendar className="w-4 h-4" />
-                                <span>
-                                  {formatMasterclassDate(
-                                    (selectedContent as YoutubeContent).scheduled_date!
-                                  )}{' '}
-                                  {(selectedContent as YoutubeContent).scheduled_time}
-                                </span>
-                              </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </>
-            ) : (
-              /* ✅ NEW: All Content View */
-              renderAllContent()
-            )}
+            <MasterclassPlayer
+              selectedContent={selectedContent}
+              setSelectedContent={setSelectedContent}
+              showAllContent={showAllContent}
+              masterclass={masterclass}
+              hasAccess={!!hasAccess}
+              isMasterclassFree={isMasterclassFree}
+              processing={processing}
+              onEnroll={handlePaidEnrollment}
+            />
 
             {/* Demo Video Section */}
             {masterclass.demo_video_url && !showAllContent && (
@@ -644,39 +359,20 @@ export default function MasterclassDetailPage() {
                     </div>
                   )}
                   {activeTab === 'notes' && (
-                    hasAccess ? (
-                      masterclass.notes && masterclass.notes.length > 0 ? (
-                        <div className="space-y-3">
-                          {masterclass.notes.map(note => (
-                            <a href={note.url} target="_blank" rel="noopener noreferrer" key={note.id} className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-                              <FileText className="w-5 h-5 text-indigo-500" />
-                              <span className="font-medium text-gray-800 dark:text-gray-200">{note.title}</span>
-                            </a>
-                          ))}
-                        </div>
-                      ) : <p className="text-gray-500 text-center py-8">No notes available for this masterclass yet.</p>
-                    ) : (
-                      <LockedContent title="Notes are Locked" message="Enroll in this masterclass to access all the notes." />
-                    )
+                    <MasterclassNotes
+                      masterclass={masterclass}
+                      hasAccess={!!hasAccess}
+                      isMasterclassFree={isMasterclassFree}
+                      onEnroll={handlePaidEnrollment}
+                    />
                   )}
                   {activeTab === 'tests' && (
-                    hasAccess ? (
-                      masterclass.tests && masterclass.tests.length > 0 ? (
-                        <div className="space-y-3">
-                          {masterclass.tests.map(test => (
-                            <Link href={`/testportal/${test.id}?masterclassId=${masterclassId}`} key={test.id} className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-                              <ClipboardCheck className="w-5 h-5 text-green-500" />
-                              <div>
-                                <p className="font-medium text-gray-800 dark:text-gray-200">{test.title}</p>
-                                {test.description && <p className="text-sm text-gray-500 dark:text-gray-400">{test.description}</p>}
-                              </div>
-                            </Link>
-                          ))}
-                        </div>
-                      ) : <p className="text-gray-500 text-center py-8">No tests available for this masterclass yet.</p>
-                    ) : (
-                      <LockedContent title="Tests are Locked" message="Enroll in this masterclass to take tests and track your progress." />
-                    )
+                    <MasterclassTests
+                      masterclass={masterclass}
+                      hasAccess={!!hasAccess}
+                      isMasterclassFree={isMasterclassFree}
+                      onEnroll={handlePaidEnrollment}
+                    />
                   )}
                 </div>
               </div>

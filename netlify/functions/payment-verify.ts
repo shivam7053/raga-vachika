@@ -5,7 +5,7 @@ import { adminDb } from "../../src/lib/firebaseAdmin";
 import admin from "firebase-admin";
 import { sendEmail } from "../../src/utils/gmailHelper";
 import { Masterclass, MasterclassContent } from "../../src/types/masterclass";
-import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import { PDFDocument, rgb, StandardFonts, degrees } from "pdf-lib";
 
 // Helper: ensure required envs exist
 function requireEnv(name: string) {
@@ -30,43 +30,157 @@ async function generatePdfReceiptBase64(
 ): Promise<string> {
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage();
-  const { height } = page.getSize();
+  const { width, height } = page.getSize();
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-  const fontSize = 12;
-  const brandColor = rgb(14 / 255, 165 / 255, 233 / 255); // sky-500
+  // Theme Colors (Orange & Blue)
+  const blueColor = rgb(0.05, 0.65, 0.91); // Sky blue-ish
+  const orangeColor = rgb(0.98, 0.45, 0.09); // Orange
+  const darkGray = rgb(0.2, 0.2, 0.2);
+  const white = rgb(1, 1, 1);
+  const lightGray = rgb(0.9, 0.9, 0.9);
 
-  page.drawText("Ragavachika - Payment Receipt", {
-    x: 50,
-    y: height - 50,
+  // --- Watermark (Govt Style) ---
+  const watermarkText = "RAGA VACHIKA";
+  page.drawText(watermarkText, {
+    x: width / 2 - 200,
+    y: height / 2,
+    size: 60,
     font: boldFont,
-    size: 22,
-    color: brandColor,
+    color: lightGray,
+    rotate: degrees(45),
+    opacity: 0.3,
   });
 
-  const details = [
-    { label: "Order ID:", value: orderId },
-    { label: "Payment ID:", value: paymentId },
-    { label: "Date:", value: new Date(timestamp).toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short' }) },
-    { label: "Billed to:", value: `${userName} (${userEmail})` },
-    { label: "Item:", value: masterclassTitle },
-    { label: "Amount Paid:", value: `INR ${amount.toFixed(2)}` },
-  ];
+  // --- Border ---
+  page.drawRectangle({
+    x: 20,
+    y: 20,
+    width: width - 40,
+    height: height - 40,
+    borderColor: blueColor,
+    borderWidth: 2,
+  });
 
-  let yPosition = height - 100;
-  for (const detail of details) {
-    page.drawText(detail.label, { x: 50, y: yPosition, font: boldFont, size: fontSize });
-    page.drawText(detail.value, { x: 150, y: yPosition, font, size: fontSize });
-    yPosition -= 20;
-  }
+  // --- Header ---
+  page.drawRectangle({
+    x: 20,
+    y: height - 120,
+    width: width - 40,
+    height: 100,
+    color: blueColor,
+  });
 
-  page.drawText("Thank you for your purchase with Ragavachika!", {
-    x: 50,
-    y: yPosition - 30,
+  page.drawText("PAYMENT RECEIPT", {
+    x: 40,
+    y: height - 70,
+    size: 26,
+    font: boldFont,
+    color: white,
+  });
+
+  page.drawText("Raga Vachika", {
+    x: width - 200,
+    y: height - 60,
+    size: 20,
+    font: boldFont,
+    color: white,
+  });
+  
+  page.drawText("Official Document", {
+    x: width - 200,
+    y: height - 80,
+    size: 10,
     font,
-    size: fontSize,
-    color: brandColor,
+    color: white,
+  });
+
+  // --- Details Section ---
+  let yPos = height - 160;
+  const leftColX = 50;
+  const rightColX = 300;
+
+  // Billed To
+  page.drawText("Billed To:", { x: leftColX, y: yPos, size: 14, font: boldFont, color: orangeColor });
+  yPos -= 20;
+  page.drawText(userName, { x: leftColX, y: yPos, size: 12, font: boldFont, color: darkGray });
+  yPos -= 15;
+  page.drawText(userEmail, { x: leftColX, y: yPos, size: 10, font, color: darkGray });
+
+  // Transaction Info (Right side)
+  let rightYPos = height - 160;
+  const drawInfoRow = (label: string, value: string) => {
+    page.drawText(label, { x: rightColX, y: rightYPos, size: 10, font: boldFont, color: darkGray });
+    page.drawText(value, { x: rightColX + 80, y: rightYPos, size: 10, font, color: darkGray });
+    rightYPos -= 15;
+  };
+
+  drawInfoRow("Order ID:", orderId);
+  drawInfoRow("Payment ID:", paymentId);
+  drawInfoRow("Date:", new Date(timestamp).toLocaleDateString('en-US', { dateStyle: 'medium' }));
+
+  yPos = Math.min(yPos, rightYPos) - 40;
+
+  // --- Item Table ---
+  // Header
+  page.drawRectangle({
+    x: 40,
+    y: yPos,
+    width: width - 80,
+    height: 30,
+    color: orangeColor,
+  });
+
+  page.drawText("Description", { x: 50, y: yPos + 10, size: 12, font: boldFont, color: white });
+  page.drawText("Amount", { x: width - 150, y: yPos + 10, size: 12, font: boldFont, color: white });
+
+  yPos -= 30;
+
+  // Row
+  page.drawText(masterclassTitle, { x: 50, y: yPos - 15, size: 12, font, color: darkGray });
+  page.drawText(`INR ${amount.toFixed(2)}`, { x: width - 150, y: yPos - 15, size: 12, font: boldFont, color: darkGray });
+
+  // Line
+  yPos -= 30;
+  page.drawLine({
+    start: { x: 40, y: yPos },
+    end: { x: width - 40, y: yPos },
+    thickness: 1,
+    color: lightGray,
+  });
+
+  // Total
+  yPos -= 30;
+  const totalLabel = "Total Paid:";
+  const totalValue = `INR ${amount.toFixed(2)}`;
+  
+  page.drawText(totalLabel, { x: width - 250, y: yPos, size: 14, font: boldFont, color: blueColor });
+  page.drawText(totalValue, { x: width - 150, y: yPos, size: 14, font: boldFont, color: orangeColor });
+
+  // --- Footer ---
+  const footerY = 50;
+  page.drawLine({
+    start: { x: 40, y: footerY + 20 },
+    end: { x: width - 40, y: footerY + 20 },
+    thickness: 1,
+    color: blueColor,
+  });
+
+  page.drawText("Thank you for choosing Ragavachika.", {
+    x: width / 2 - 90,
+    y: footerY,
+    size: 10,
+    font,
+    color: darkGray,
+  });
+  
+  page.drawText("This is a computer-generated receipt and does not require a physical signature.", {
+    x: width / 2 - 160,
+    y: footerY - 15,
+    size: 8,
+    font,
+    color: rgb(0.6, 0.6, 0.6),
   });
 
   return await pdfDoc.saveAsBase64();
